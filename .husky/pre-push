@@ -1,1 +1,2 @@
+pnpm secrets:scan:full
 pnpm test

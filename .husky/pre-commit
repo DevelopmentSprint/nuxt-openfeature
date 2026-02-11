@@ -1,2 +1,3 @@
+pnpm secrets:scan
 pnpm lint
 pnpm typecheck

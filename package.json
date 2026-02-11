@@ -31,7 +31,9 @@
     "test": "vitest run",
     "build": "unbuild",
     "prepack": "pnpm build",
-    "prepare": "husky"
+    "prepare": "husky",
+    "secrets:scan": "gitleaks-secret-scanner --diff-mode staged --redact --no-banner",
+    "secrets:scan:full": "gitleaks-secret-scanner --diff-mode history --depth 50 --redact --no-banner"
   },
   "peerDependencies": {
     "@openfeature/flagsmith-provider": "^0.1.2",
@@ -47,6 +49,7 @@
     "@types/node": "^24.6.0",
     "@typescript-eslint/parser": "^8.46.2",
     "eslint": "^9.39.2",
+    "gitleaks-secret-scanner": "^2.1.1",
     "h3": "^1.15.5",
     "husky": "^9.1.7",
     "nuxt": "^4.3.0",

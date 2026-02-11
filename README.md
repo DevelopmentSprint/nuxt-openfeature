@@ -63,5 +63,5 @@ pnpm pack
 
 ## Git Hooks (Husky)
 
-- `pre-commit`: runs `pnpm lint` and `pnpm typecheck`
-- `pre-push`: runs `pnpm test`
+- `pre-commit`: runs `pnpm secrets:scan`, `pnpm lint`, and `pnpm typecheck`
+- `pre-push`: runs `pnpm secrets:scan:full` and `pnpm test`
