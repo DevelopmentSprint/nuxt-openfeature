@@ -5,3 +5,8 @@ dist
 coverage
 *.tgz
 .env
+
+# Local Agent Settings
+.claude
+.codex
+.mcp.json
