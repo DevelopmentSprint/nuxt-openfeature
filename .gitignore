@@ -4,3 +4,4 @@ dist
 .output
 coverage
 *.tgz
+.env
