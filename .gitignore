@@ -10,3 +10,6 @@ coverage
 .claude
 .codex
 .mcp.json
+# OS/editor noise
+.DS_Store
+.vscode/
