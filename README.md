@@ -1,17 +1,17 @@
-# @nls/nuxt-openfeature
+# @northloopstrategies/nuxt-openfeature
 
 Nuxt 4 OpenFeature module extracted from the application repo.
 
 ## Install
 
 ```bash
-pnpm add @nls/nuxt-openfeature
+pnpm add @northloopstrategies/nuxt-openfeature
 ```
 
 `.npmrc` (consumer):
 
 ```ini
-@nls:registry=https://npm.pkg.github.com
+@northloopstrategies:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
 always-auth=true
 ```
@@ -20,7 +20,7 @@ always-auth=true
 
 ```ts
 export default defineNuxtConfig({
-  modules: ['@nls/nuxt-openfeature'],
+  modules: ['@northloopstrategies/nuxt-openfeature'],
   openFeature: {
     providers: [
       {
@@ -46,7 +46,7 @@ export default defineNuxtConfig({
 - Version with semver in `package.json`
 - Create tag `vX.Y.Z`
 - Push tag to trigger publish workflow
-- Configure repo secret `GITHUB_PACKAGES_TOKEN` (PAT with `write:packages`, and `repo` if org policy requires it)
+- Publish workflow uses built-in `GITHUB_TOKEN` with `packages: write` permission (no custom `GITHUB_*` secret needed)
 
 ## Commands
 
