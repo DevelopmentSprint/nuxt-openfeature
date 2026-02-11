@@ -52,6 +52,7 @@ export default defineNuxtConfig({
 
 ```bash
 pnpm install --ignore-workspace
+pnpm prepare
 pnpm dev
 pnpm lint
 pnpm typecheck
@@ -59,3 +60,8 @@ pnpm test
 pnpm build
 pnpm pack
 ```
+
+## Git Hooks (Husky)
+
+- `pre-commit`: runs `pnpm lint` and `pnpm typecheck`
+- `pre-push`: runs `pnpm test`
