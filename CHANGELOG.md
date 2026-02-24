@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- b524c84: Expand OSS documentation coverage and harden release/security automation with Changesets, npm provenance publishing, Dependabot, dependency review, and CodeQL workflows.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project follows Semantic Versioning.
