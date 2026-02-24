@@ -28,3 +28,9 @@ jobs:
         run: pnpm test
       - name: Build
         run: pnpm build
+      - name: Docs Lint
+        run: pnpm docs:lint
+      - name: Docs Typecheck
+        run: pnpm docs:typecheck
+      - name: Docs Build
+        run: pnpm docs:build

@@ -2,7 +2,7 @@
 
 ## Scope
 
-Defines technical boundaries and runtime behavior for `@nls/nuxt-openfeature`.
+Defines technical boundaries and runtime behavior for `@ribrewguy/nuxt-openfeature`.
 
 ## System Boundaries
 

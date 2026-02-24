@@ -2,9 +2,13 @@ node_modules
 dist
 .nuxt
 .output
+.data
 coverage
 *.tgz
 .env
+**/.nuxt
+**/.output
+**/.data
 
 # Local Agent Settings
 .claude

@@ -21,7 +21,7 @@ export type {
 
 export default defineNuxtModule<OpenFeatureModuleOptions>({
   meta: {
-    name: '@northloopstrategies/nuxt-openfeature',
+    name: '@ribrewguy/nuxt-openfeature',
     configKey: 'openFeature',
     compatibility: {
       nuxt: '>=4.0.0'

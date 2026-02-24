@@ -3,7 +3,7 @@
 ## Document Control
 
 - Product Area: Feature Flagging Platform Integration
-- Module: `@nls/nuxt-openfeature`
+- Module: `@ribrewguy/nuxt-openfeature`
 - Status: Draft baseline
 - Owner: Platform Engineering
 

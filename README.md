@@ -1,26 +1,18 @@
-# @northloopstrategies/nuxt-openfeature
+# @ribrewguy/nuxt-openfeature
 
 Nuxt 4 OpenFeature module extracted from the application repo.
 
 ## Install
 
 ```bash
-pnpm add @northloopstrategies/nuxt-openfeature
-```
-
-`.npmrc` (consumer):
-
-```ini
-@northloopstrategies:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
-always-auth=true
+pnpm add @ribrewguy/nuxt-openfeature
 ```
 
 ## Usage
 
 ```ts
 export default defineNuxtConfig({
-  modules: ['@northloopstrategies/nuxt-openfeature'],
+  modules: ['@ribrewguy/nuxt-openfeature'],
   openFeature: {
     providers: [
       {
@@ -43,23 +35,40 @@ export default defineNuxtConfig({
 
 ## Release
 
-- Version with semver in `package.json`
-- Create tag `vX.Y.Z`
-- Push tag to trigger publish workflow
-- Publish workflow uses built-in `GITHUB_TOKEN` with `packages: write` permission (no custom `GITHUB_*` secret needed)
+- Create a release changeset: `pnpm changeset`
+- Merge to `main` so `changesets.yml` opens/updates the release PR
+- Merge the release PR to bump versions and changelog
+- Create and push tag `vX.Y.Z` for the release commit
+- Ensure npm Trusted Publisher is configured for this repository/workflow
+- Publish workflow uses npm trusted publishing with provenance (`--provenance`)
+- One-time maintainer setup details: `REPOSITORY_SETUP.md`
 
 ## Commands
 
 ```bash
-pnpm install --ignore-workspace
+pnpm install
 pnpm prepare
 pnpm dev
+pnpm docs:dev
 pnpm lint
+pnpm docs:lint
 pnpm typecheck
+pnpm docs:typecheck
 pnpm test
 pnpm build
+pnpm docs:build
+pnpm changeset
+pnpm version-packages
 pnpm pack
 ```
+
+## Documentation
+
+- Source: `docs/`
+- Local docs dev server: `pnpm docs:dev`
+- Preview deploy workflow: `.github/workflows/docs-preview.yml`
+- Production deploy workflow: `.github/workflows/docs-production.yml`
+- Required repo secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_DOCS_PROJECT_ID`
 
 ## Git Hooks (Husky)
 
