@@ -40,14 +40,27 @@ jobs:
       - name: Validate docs build
         run: pnpm docs:build
 
+      - name: Detect Vercel configuration
+        id: vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_DOCS_PROJECT_ID: ${{ secrets.VERCEL_DOCS_PROJECT_ID }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_DOCS_PROJECT_ID" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Vercel production not configured
-        if: ${{ secrets.VERCEL_TOKEN == '' || secrets.VERCEL_ORG_ID == '' || secrets.VERCEL_DOCS_PROJECT_ID == '' }}
+        if: ${{ steps.vercel.outputs.configured != 'true' }}
         run: |
           echo "::notice::Skipping Vercel production deploy because required secrets are missing."
           echo "::notice::Set VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_DOCS_PROJECT_ID."
 
       - name: Pull Vercel project settings
-        if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_DOCS_PROJECT_ID != '' }}
+        if: ${{ steps.vercel.outputs.configured == 'true' }}
         working-directory: docs
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -55,7 +68,7 @@ jobs:
         run: pnpm dlx vercel@latest pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Vercel deployment
-        if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_DOCS_PROJECT_ID != '' }}
+        if: ${{ steps.vercel.outputs.configured == 'true' }}
         working-directory: docs
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -63,7 +76,7 @@ jobs:
         run: pnpm dlx vercel@latest build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy production to Vercel
-        if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_DOCS_PROJECT_ID != '' }}
+        if: ${{ steps.vercel.outputs.configured == 'true' }}
         working-directory: docs
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
