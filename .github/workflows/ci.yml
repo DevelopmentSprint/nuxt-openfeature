@@ -20,6 +20,9 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Install (docs)
+        run: pnpm install --ignore-workspace --frozen-lockfile
+        working-directory: docs
       - name: Lint
         run: pnpm lint
       - name: Typecheck

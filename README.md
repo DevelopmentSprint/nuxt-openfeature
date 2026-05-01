@@ -46,7 +46,8 @@ export default defineNuxtConfig({
 ## Commands
 
 ```bash
-pnpm install
+pnpm install                                                      # root deps
+pnpm install --ignore-workspace --frozen-lockfile --dir docs       # docs deps (separate project)
 pnpm prepare
 pnpm dev
 pnpm docs:dev
@@ -66,9 +67,10 @@ pnpm pack
 
 - Source: `docs/`
 - Local docs dev server: `pnpm docs:dev`
-- Preview deploy workflow: `.github/workflows/docs-preview.yml`
-- Production deploy workflow: `.github/workflows/docs-production.yml`
-- Required repo secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_DOCS_PROJECT_ID`
+- Hosting: GitHub Pages, deployed automatically from `main` by `.github/workflows/docs-pages.yml`
+- Repository setting required (one-time): Settings → Pages → Source = GitHub Actions
+- No third-party platform secrets required
+- `docs/` is a standalone pnpm project (not in the root workspace), so its dependencies are installed separately. See `docs/README.md` for details.
 
 ## Git Hooks (Husky)
 

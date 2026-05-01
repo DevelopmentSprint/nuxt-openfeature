@@ -1,5 +1,7 @@
 import modulePackage from '../package.json'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxt/content'],
   css: ['~/assets/css/main.css'],
@@ -7,7 +9,11 @@ export default defineNuxtConfig({
     preference: 'light',
     fallback: 'light'
   },
+  nitro: {
+    preset: 'github_pages'
+  },
   app: {
+    baseURL: isProduction ? '/nuxt-openfeature/' : '/',
     head: {
       title: 'Nuxt OpenFeature Docs',
       meta: [
