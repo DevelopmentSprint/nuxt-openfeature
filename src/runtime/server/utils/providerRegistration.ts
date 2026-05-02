@@ -1,19 +1,8 @@
 import { FirstMatchStrategy, InMemoryProvider, MultiProvider, OpenFeature, type Provider } from '@openfeature/server-sdk'
 
-import { buildFlagsmithProvider } from '../plugins/flagsmith'
-import { buildPosthogProvider } from '../plugins/posthog'
-import { buildVercelProvider } from '../plugins/vercel'
-import { buildEnvFlags, type FlagDefinition } from './envFlags'
+import { getAdapter, type ProviderConfig } from './providerAdapters'
 
-const DEFAULT_ENV_PREFIX = 'OPENFEATURE_FLAG_'
-
-export type ProviderRegistrationConfig = {
-  type: 'in-memory' | 'env' | 'flagsmith' | 'posthog' | 'vercel'
-  envPrefix?: string
-  flags?: Record<string, FlagDefinition>
-  options?: Record<string, unknown>
-  providerOptions?: Record<string, unknown>
-}
+export type ProviderRegistrationConfig = ProviderConfig
 
 export type ProviderLogger = {
   warn: (message: string, context?: Record<string, unknown>) => void
@@ -34,26 +23,11 @@ const errorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
 export const buildProvider = (config: ProviderRegistrationConfig): Provider => {
-  const envPrefix = config.envPrefix ?? DEFAULT_ENV_PREFIX
-  const envFlags = buildEnvFlags(envPrefix)
-  const configuredFlags = config.flags ?? {}
-  switch (config.type) {
-    case 'in-memory':
-      return new InMemoryProvider(configuredFlags)
-    case 'env':
-      return new InMemoryProvider(envFlags)
-    case 'flagsmith':
-      return buildFlagsmithProvider({ flagsmith: config.options, provider: config.providerOptions })
-    case 'posthog':
-      return buildPosthogProvider({
-        posthog: config.options as Parameters<typeof buildPosthogProvider>[0] extends infer T ? T extends { posthog?: infer P } ? P : never : never,
-        sendFeatureFlagEvents: (config.providerOptions as { sendFeatureFlagEvents?: boolean } | undefined)?.sendFeatureFlagEvents
-      })
-    case 'vercel':
-      return buildVercelProvider(config.providerOptions as Parameters<typeof buildVercelProvider>[0])
-    default:
-      return new InMemoryProvider(configuredFlags)
+  const adapter = getAdapter(config.type)
+  if (!adapter) {
+    return new InMemoryProvider(config.flags ?? {})
   }
+  return adapter.build(config)
 }
 
 const tryBuildProvider = (
