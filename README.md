@@ -2,6 +2,8 @@
 
 Nuxt 4 OpenFeature module extracted from the application repo.
 
+📖 **Documentation:** https://ribrewguy.github.io/nuxt-openfeature/
+
 ## Install
 
 ```bash
@@ -65,10 +67,10 @@ pnpm pack
 
 ## Documentation
 
+- Live site: **https://ribrewguy.github.io/nuxt-openfeature/**
 - Source: `docs/`
 - Local docs dev server: `pnpm docs:dev`
 - Hosting: GitHub Pages, deployed automatically from `main` by `.github/workflows/docs-pages.yml`
-- Repository setting required (one-time): Settings → Pages → Source = GitHub Actions
 - No third-party platform secrets required
 - `docs/` is a standalone pnpm project (not in the root workspace), so its dependencies are installed separately. See `docs/README.md` for details.
 
