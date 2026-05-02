@@ -1,5 +1,7 @@
 # @ribrewguy/nuxt-openfeature
 
+[![codecov](https://codecov.io/gh/ribrewguy/nuxt-openfeature/graph/badge.svg)](https://codecov.io/gh/ribrewguy/nuxt-openfeature)
+
 Nuxt 4 OpenFeature module extracted from the application repo.
 
 📖 **Documentation:** https://ribrewguy.github.io/nuxt-openfeature/
