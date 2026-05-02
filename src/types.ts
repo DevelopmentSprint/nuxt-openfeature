@@ -1,4 +1,6 @@
-export type OpenFeatureFlagValue = boolean | string | number
+import type { JsonValue } from '@openfeature/server-sdk'
+
+export type OpenFeatureFlagValue = boolean | string | number | JsonValue
 
 export type OpenFeatureFlagDefinition = {
   variants: Record<string, OpenFeatureFlagValue>
