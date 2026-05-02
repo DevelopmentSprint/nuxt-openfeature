@@ -41,10 +41,8 @@ export default defineNuxtConfig({
 
 - Create a release changeset: `pnpm changeset`
 - Merge to `main` so `changesets.yml` opens/updates the release PR
-- Merge the release PR to bump versions and changelog
-- Create and push tag `vX.Y.Z` for the release commit
-- Ensure npm Trusted Publisher is configured for this repository/workflow
-- Publish workflow uses npm trusted publishing with provenance (`--provenance`)
+- Merge the release PR — `changesets.yml` automatically tags `vX.Y.Z` and publishes to npm with provenance
+- Ensure npm Trusted Publisher is configured for this repository pointing at `.github/workflows/changesets.yml`
 - One-time maintainer setup details: `REPOSITORY_SETUP.md`
 
 ## Commands
