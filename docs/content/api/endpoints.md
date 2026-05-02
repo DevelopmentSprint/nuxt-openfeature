@@ -37,7 +37,12 @@ Evaluates a single flag key and returns a boolean `enabled` field.
 | Param | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `default` | `boolean` \| `'1'/'0'` \| `'true'/'false'` | `false` | Fallback value used for evaluation |
-| `context` | JSON string | none | Optional explicit evaluation context |
+
+### Evaluation Context
+
+Context is read from the validated `X-OF-CTX` request headers (same path as the bulk endpoint), not from query parameters. The client plugin sets these headers automatically when configured. Headers carry integrity hashes (`x-of-ctx-sha256`), explicit encoding (`x-of-ctx-enc: json+gzip+base64url`), and size limits enforced by the server. Invalid or oversized payloads return `400`.
+
+Query-string context (`?context=...`) is **not** supported. Sensitive targeting data should never travel in URLs because of access logs, browser history, and HTTP referrers.
 
 ### Response
 
@@ -50,7 +55,6 @@ Evaluates a single flag key and returns a boolean `enabled` field.
 ### Notes
 
 - If `:key` is missing, response is `{ "enabled": false }`.
-- Invalid `context` query JSON is ignored and evaluation continues.
 
 ## `GET /api/feature-flags/diagnostics`
 

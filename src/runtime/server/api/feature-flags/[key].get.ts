@@ -1,7 +1,6 @@
 import { defineEventHandler, getQuery, getRouterParam } from 'h3'
-import type { EvaluationContext } from '@openfeature/server-sdk'
 
-import { evaluateFeatureFlag } from '../../utils/featureFlags'
+import { evaluateFeatureFlag, getFeatureFlagContext } from '../../utils/featureFlags'
 
 const normalizeBoolean = (value: unknown): boolean | undefined => {
   if (typeof value === 'string') {
@@ -23,23 +22,6 @@ const normalizeBoolean = (value: unknown): boolean | undefined => {
   return undefined
 }
 
-const parseContext = (rawContext: unknown): EvaluationContext | undefined => {
-  if (!rawContext || typeof rawContext !== 'string') {
-    return undefined
-  }
-
-  try {
-    const parsed = JSON.parse(rawContext)
-    if (parsed && typeof parsed === 'object') {
-      return parsed as EvaluationContext
-    }
-  } catch (error) {
-    console.warn('Failed to parse feature flag context', { error })
-  }
-
-  return undefined
-}
-
 export default defineEventHandler(async (event) => {
   const flagKey = getRouterParam(event, 'key')
 
@@ -52,7 +34,7 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const defaultValue = normalizeBoolean(query.default) ?? false
 
-  const context = parseContext(query.context)
+  const context = getFeatureFlagContext(event)
   const enabled = await evaluateFeatureFlag(flagKey, defaultValue, context)
 
   return {
