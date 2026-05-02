@@ -42,8 +42,7 @@ PAYLOAD="$(cat <<'JSON'
     "strict": true,
     "contexts": [
       "validate",
-      "dependency-review",
-      "analyze (javascript-typescript)"
+      "dependency-review"
     ]
   },
   "enforce_admins": true,

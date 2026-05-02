@@ -11,14 +11,16 @@ Configure trusted publishing for `@ribrewguy/nuxt-openfeature`:
 2. In **Publishing access**, add a GitHub Actions trusted publisher with:
    - Owner: `ribrewguy`
    - Repository: `nuxt-openfeature`
-   - Workflow file: `publish.yml`
+   - Workflow file: `changesets.yml`
    - Environment: _(leave blank)_
 
-This matches `.github/workflows/publish.yml`, which already uses:
+This matches `.github/workflows/changesets.yml`, which:
 
-- Node 24
-- `permissions.id-token: write`
-- `pnpm publish --access public --provenance`
+- Runs on `push` to `main`
+- Sets `permissions.id-token: write` for OIDC trusted publishing
+- Configures `actions/setup-node` with `registry-url: https://registry.npmjs.org/`
+- Invokes `changesets/action@v1` which calls `pnpm release` (alias for `changeset publish`) when no changesets remain after a release-PR merge
+- `provenance: true` in `package.json#publishConfig` flows automatically into `npm publish --provenance`
 
 ## 2) Branch Protection
 
@@ -40,7 +42,6 @@ The script enforces:
 - required checks:
   - `validate`
   - `dependency-review`
-  - `analyze (javascript-typescript)`
 - stale review dismissal
 - one approval required
 - no force pushes or deletions
