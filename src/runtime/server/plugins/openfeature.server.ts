@@ -2,12 +2,14 @@ import { FirstMatchStrategy, InMemoryProvider, MultiProvider, OpenFeature, type 
 import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime'
 
 import { buildFlagsmithProvider } from './flagsmith'
+import { buildPosthogProvider } from './posthog'
+import { buildVercelProvider } from './vercel'
 import { buildEnvFlags, type FlagDefinition } from '../utils/envFlags'
 
 const DEFAULT_ENV_PREFIX = 'OPENFEATURE_FLAG_'
 
 type OpenFeatureProviderConfig = {
-  type: 'in-memory' | 'env' | 'flagsmith'
+  type: 'in-memory' | 'env' | 'flagsmith' | 'posthog' | 'vercel'
   envPrefix?: string
   flags?: Record<string, FlagDefinition>
   options?: Record<string, unknown>
@@ -22,11 +24,6 @@ const buildProvider = (provider: OpenFeatureProviderConfig): Provider => {
   const envPrefix = provider.envPrefix ?? DEFAULT_ENV_PREFIX
   const envFlags = buildEnvFlags(envPrefix)
   const configuredFlags = provider.flags ?? {}
-  const providerOptions = {
-    flagsmith: provider.options,
-    provider: provider.providerOptions
-  }
-
   switch (provider.type) {
     case 'in-memory':
       // TODO: replace with remote provider once OpenFeature backend is available.
@@ -35,7 +32,14 @@ const buildProvider = (provider: OpenFeatureProviderConfig): Provider => {
       // TODO: replace with remote provider once OpenFeature backend is available.
       return new InMemoryProvider(envFlags)
     case 'flagsmith':
-      return buildFlagsmithProvider(providerOptions)
+      return buildFlagsmithProvider({ flagsmith: provider.options, provider: provider.providerOptions })
+    case 'posthog':
+      return buildPosthogProvider({
+        posthog: provider.options as Parameters<typeof buildPosthogProvider>[0] extends infer T ? T extends { posthog?: infer P } ? P : never : never,
+        sendFeatureFlagEvents: (provider.providerOptions as { sendFeatureFlagEvents?: boolean } | undefined)?.sendFeatureFlagEvents
+      })
+    case 'vercel':
+      return buildVercelProvider(provider.providerOptions as Parameters<typeof buildVercelProvider>[0])
     default:
       // TODO: support additional provider classes via explicit mapping.
       return new InMemoryProvider(configuredFlags)

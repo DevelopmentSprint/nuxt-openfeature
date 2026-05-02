@@ -56,21 +56,40 @@
     "@openfeature/flagsmith-provider": "^0.1.2",
     "@openfeature/server-sdk": "^1.20.1",
     "@tanstack/vue-query": "^5.0.0",
+    "@vercel/flags-core": "^1.4.0",
     "flagsmith-nodejs": "^6.2.0",
-    "nuxt": "^4.0.0"
+    "nuxt": "^4.0.0",
+    "posthog-node": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@openfeature/flagsmith-provider": {
+      "optional": true
+    },
+    "@vercel/flags-core": {
+      "optional": true
+    },
+    "flagsmith-nodejs": {
+      "optional": true
+    },
+    "posthog-node": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
     "@eslint/js": "^9.39.4",
     "@nuxt/kit": "^4.3.0",
     "@nuxt/test-utils": "^3.23.0",
+    "@tanstack/vue-query": "^5.100.7",
     "@types/node": "^25.6.0",
     "@typescript-eslint/parser": "^8.59.1",
+    "@vercel/flags-core": "^1.4.0",
     "eslint": "^9.39.2",
     "gitleaks-secret-scanner": "^2.1.1",
     "h3": "^1.15.5",
     "husky": "^9.1.7",
     "nuxt": "^4.3.0",
+    "posthog-node": "^5.33.0",
     "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
     "vitest": "^3.2.4",

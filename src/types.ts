@@ -6,7 +6,7 @@ export type OpenFeatureFlagDefinition = {
   disabled?: boolean
 }
 
-export type OpenFeatureProviderType = 'in-memory' | 'env' | 'flagsmith'
+export type OpenFeatureProviderType = 'in-memory' | 'env' | 'flagsmith' | 'posthog' | 'vercel'
 
 export type OpenFeatureProviderConfig = {
   type: OpenFeatureProviderType
