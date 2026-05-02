@@ -1,8 +1,5 @@
 import { InMemoryProvider, type Provider } from '@openfeature/server-sdk'
 
-import { buildFlagsmithProvider, fetchFlagsmithEnvironmentFlags } from '../plugins/flagsmith'
-import { buildPosthogProvider } from '../plugins/posthog'
-import { buildVercelProvider } from '../plugins/vercel'
 import { buildEnvFlags, type FlagDefinition } from './envFlags'
 
 export type ProviderType = 'in-memory' | 'env' | 'flagsmith' | 'posthog' | 'vercel'
@@ -27,7 +24,7 @@ export type DiagnosticEntry = {
 }
 
 export type ProviderAdapter = {
-  build: (config: ProviderConfig) => Provider
+  build: (config: ProviderConfig) => Promise<Provider>
   getDiagnostics: (config: ProviderConfig) => Promise<DiagnosticEntry>
 }
 
@@ -44,7 +41,7 @@ const flagDefinitionsToDiagnostics = (
 
 export const adapters: Record<ProviderType, ProviderAdapter> = {
   'in-memory': {
-    build: config => new InMemoryProvider(config.flags ?? {}),
+    build: async config => new InMemoryProvider(config.flags ?? {}),
     getDiagnostics: async config => ({
       type: 'in-memory',
       flags: flagDefinitionsToDiagnostics(config.flags)
@@ -52,7 +49,7 @@ export const adapters: Record<ProviderType, ProviderAdapter> = {
   },
 
   env: {
-    build: (config) => {
+    build: async (config) => {
       const envPrefix = config.envPrefix ?? DEFAULT_ENV_PREFIX
       return new InMemoryProvider(buildEnvFlags(envPrefix))
     },
@@ -66,12 +63,16 @@ export const adapters: Record<ProviderType, ProviderAdapter> = {
   },
 
   flagsmith: {
-    build: config => buildFlagsmithProvider({
-      flagsmith: config.options,
-      provider: config.providerOptions
-    }),
+    build: async (config) => {
+      const { buildFlagsmithProvider } = await import('../plugins/flagsmith')
+      return buildFlagsmithProvider({
+        flagsmith: config.options,
+        provider: config.providerOptions
+      })
+    },
     getDiagnostics: async (config) => {
       try {
+        const { fetchFlagsmithEnvironmentFlags } = await import('../plugins/flagsmith')
         const flags = await fetchFlagsmithEnvironmentFlags({ flagsmith: config.options })
         return { type: 'flagsmith', flags }
       }
@@ -82,15 +83,21 @@ export const adapters: Record<ProviderType, ProviderAdapter> = {
   },
 
   posthog: {
-    build: config => buildPosthogProvider({
-      posthog: config.options as Parameters<typeof buildPosthogProvider>[0] extends infer T ? T extends { posthog?: infer P } ? P : never : never,
-      sendFeatureFlagEvents: (config.providerOptions as { sendFeatureFlagEvents?: boolean } | undefined)?.sendFeatureFlagEvents
-    }),
+    build: async (config) => {
+      const { buildPosthogProvider } = await import('../plugins/posthog')
+      return buildPosthogProvider({
+        posthog: config.options as Parameters<typeof buildPosthogProvider>[0] extends infer T ? T extends { posthog?: infer P } ? P : never : never,
+        sendFeatureFlagEvents: (config.providerOptions as { sendFeatureFlagEvents?: boolean } | undefined)?.sendFeatureFlagEvents
+      })
+    },
     getDiagnostics: async () => ({ type: 'posthog', flags: [] })
   },
 
   vercel: {
-    build: config => buildVercelProvider(config.providerOptions as Parameters<typeof buildVercelProvider>[0]),
+    build: async (config) => {
+      const { buildVercelProvider } = await import('../plugins/vercel')
+      return buildVercelProvider(config.providerOptions as Parameters<typeof buildVercelProvider>[0])
+    },
     getDiagnostics: async () => ({ type: 'vercel', flags: [] })
   }
 }

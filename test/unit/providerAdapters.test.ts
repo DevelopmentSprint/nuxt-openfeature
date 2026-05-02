@@ -91,8 +91,8 @@ describe('provider adapter registry', () => {
     const { buildPosthogProvider } = await import('../../src/runtime/server/plugins/posthog')
     const { buildVercelProvider } = await import('../../src/runtime/server/plugins/vercel')
 
-    adapters.posthog.build({ type: 'posthog', options: { apiKey: 'phc' } })
-    adapters.vercel.build({ type: 'vercel' })
+    await adapters.posthog.build({ type: 'posthog', options: { apiKey: 'phc' } })
+    await adapters.vercel.build({ type: 'vercel' })
 
     expect(buildPosthogProvider).toHaveBeenCalled()
     expect(buildVercelProvider).toHaveBeenCalled()

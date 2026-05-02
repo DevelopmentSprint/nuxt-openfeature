@@ -41,11 +41,11 @@ export default defineNuxtConfig({
 
 | Variable | Type | Required | Default | Applies to | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `type` | `'in-memory' \\| 'env' \\| 'flagsmith'` | yes | - | all providers | Provider adapter type. |
+| `type` | `'in-memory' \\| 'env' \\| 'flagsmith' \\| 'posthog' \\| 'vercel'` | yes | - | all providers | Provider adapter type. See per-provider pages: [Flagsmith](/providers/flagsmith), [PostHog](/providers/posthog), [Vercel](/providers/vercel). |
 | `envPrefix` | `string` | no | `'OPENFEATURE_FLAG_'` | `env` | Prefix used when reading flag values from environment variables. |
 | `flags` | `Record<string, OpenFeatureFlagDefinition>` | no | `{}` | `in-memory` | Static in-memory flag definitions. |
-| `options` | `Record<string, unknown>` | no | `{}` | `flagsmith` | Passed to `flagsmith-nodejs` config (`environmentKey`, `apiUrl`, and any additional SDK options). |
-| `providerOptions` | `Record<string, unknown>` | no | `{}` | `flagsmith` | Passed to `FlagsmithOpenFeatureProvider` options (for example `useFlagsmithDefaults`). |
+| `options` | `Record<string, unknown>` | no | `{}` | `flagsmith`, `posthog` | Vendor SDK config. Flagsmith: `environmentKey`, `apiUrl`. PostHog: `apiKey`, `host`. |
+| `providerOptions` | `Record<string, unknown>` | no | `{}` | `flagsmith`, `posthog`, `vercel` | Provider-specific behavior options. Flagsmith: `useFlagsmithDefaults`. PostHog: `sendFeatureFlagEvents`. Vercel: `flagsClient` (custom `FlagsClient` instance). |
 
 ### `openFeature.providers[].flags.<flagKey>`
 

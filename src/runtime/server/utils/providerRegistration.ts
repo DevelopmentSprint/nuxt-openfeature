@@ -22,7 +22,7 @@ const consoleLogger: ProviderLogger = {
 const errorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
-export const buildProvider = (config: ProviderRegistrationConfig): Provider => {
+export const buildProvider = async (config: ProviderRegistrationConfig): Promise<Provider> => {
   const adapter = getAdapter(config.type)
   if (!adapter) {
     return new InMemoryProvider(config.flags ?? {})
@@ -30,12 +30,12 @@ export const buildProvider = (config: ProviderRegistrationConfig): Provider => {
   return adapter.build(config)
 }
 
-const tryBuildProvider = (
+const tryBuildProvider = async (
   config: ProviderRegistrationConfig,
   logger: ProviderLogger
-): Provider | null => {
+): Promise<Provider | null> => {
   try {
-    return buildProvider(config)
+    return await buildProvider(config)
   }
   catch (error) {
     logger.warn('OpenFeature provider construction failed; provider will be skipped.', {
@@ -56,7 +56,7 @@ export const registerProviders = async (
 
   const built: Provider[] = []
   for (const config of configs) {
-    const provider = tryBuildProvider(config, logger)
+    const provider = await tryBuildProvider(config, logger)
     if (provider) {
       built.push(provider)
     }
