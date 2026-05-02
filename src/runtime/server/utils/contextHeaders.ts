@@ -85,13 +85,30 @@ export const readOpenFeatureContextHeaders = (
       throw createError({ statusCode: 400, statusMessage: 'Feature flag context hash mismatch' })
     }
 
-    return JSON.parse(rawJson) as OpenFeatureClientContextPayload
+    const parsed: unknown = JSON.parse(rawJson)
+    return validateContextPayload(parsed)
   } catch (error) {
     if (error instanceof Error && 'statusCode' in error) {
       throw error
     }
     throw createError({ statusCode: 400, statusMessage: 'Invalid feature flag context payload' })
   }
+}
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const validateContextPayload = (value: unknown): OpenFeatureClientContextPayload => {
+  if (!isPlainObject(value)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid feature flag context payload' })
+  }
+  if ('targetingKey' in value && value.targetingKey !== undefined && typeof value.targetingKey !== 'string') {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid feature flag context payload' })
+  }
+  if ('traits' in value && value.traits !== undefined && !isPlainObject(value.traits)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid feature flag context payload' })
+  }
+  return value as OpenFeatureClientContextPayload
 }
 
 export const OPENFEATURE_CONTEXT_HEADER_LIMITS = {

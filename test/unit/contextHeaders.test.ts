@@ -128,4 +128,42 @@ describe('readOpenFeatureContextHeaders', () => {
     })
     expect(() => readOpenFeatureContextHeaders(event)).toThrow(/Invalid feature flag context payload/i)
   })
+
+  it.each([
+    ['a JSON string', JSON.stringify('just a string')],
+    ['a JSON array', JSON.stringify([1, 2, 3])],
+    ['a JSON number', JSON.stringify(42)],
+    ['JSON null', JSON.stringify(null)],
+    ['a numeric targetingKey', JSON.stringify({ targetingKey: 12345 })],
+    ['a non-string targetingKey', JSON.stringify({ targetingKey: { foo: 'bar' } })],
+    ['a string traits field', JSON.stringify({ targetingKey: 'u', traits: 'oops' })],
+    ['an array traits field', JSON.stringify({ targetingKey: 'u', traits: ['a', 'b'] })]
+  ])('throws 400 when payload shape is invalid (%s)', (_label, json) => {
+    const event = eventWithHeaders({
+      'x-of-ctx': encodePayload(json),
+      'x-of-ctx-enc': ENCODING,
+      'x-of-ctx-sha256': sha256Hex(json)
+    })
+    expect(() => readOpenFeatureContextHeaders(event)).toThrow(/Invalid feature flag context payload/i)
+  })
+
+  it('accepts a valid payload with only targetingKey', () => {
+    const json = JSON.stringify({ targetingKey: 'user-1' })
+    const event = eventWithHeaders({
+      'x-of-ctx': encodePayload(json),
+      'x-of-ctx-enc': ENCODING,
+      'x-of-ctx-sha256': sha256Hex(json)
+    })
+    expect(readOpenFeatureContextHeaders(event)).toEqual({ targetingKey: 'user-1' })
+  })
+
+  it('accepts a valid payload with only traits', () => {
+    const json = JSON.stringify({ traits: { plan: 'pro' } })
+    const event = eventWithHeaders({
+      'x-of-ctx': encodePayload(json),
+      'x-of-ctx-enc': ENCODING,
+      'x-of-ctx-sha256': sha256Hex(json)
+    })
+    expect(readOpenFeatureContextHeaders(event)).toEqual({ traits: { plan: 'pro' } })
+  })
 })
