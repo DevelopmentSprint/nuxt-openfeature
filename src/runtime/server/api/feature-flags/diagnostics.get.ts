@@ -1,18 +1,9 @@
 import { defineEventHandler } from 'h3'
 import { useRuntimeConfig } from 'nitropack/runtime'
 
-import { buildEnvFlags, type FlagDefinition } from '../../utils/envFlags'
+import { buildEnvFlags } from '../../utils/envFlags'
 import { fetchFlagsmithEnvironmentFlags } from '../../plugins/flagsmith'
-
-type DiagnosticFlagDefinition = FlagDefinition & { disabled?: boolean }
-
-type ProviderConfig = {
-  type: 'in-memory' | 'env' | 'flagsmith'
-  envPrefix?: string
-  flags?: Record<string, DiagnosticFlagDefinition>
-  options?: Record<string, unknown>
-  providerOptions?: Record<string, unknown>
-}
+import { sanitizeProvider, type DiagnosticFlagDefinition, type DiagnosticProviderConfig } from '../../utils/diagnosticsRedaction'
 
 const getFlagValue = (definition: DiagnosticFlagDefinition) => {
   if (!definition) {
@@ -32,7 +23,7 @@ const buildInMemoryFlags = (flags?: Record<string, DiagnosticFlagDefinition>) =>
 export default defineEventHandler(async () => {
   const runtimeConfig = useRuntimeConfig()
   const rawProviders = (runtimeConfig.openFeature as { providers?: unknown } | undefined)?.providers
-  const providers = Array.isArray(rawProviders) ? (rawProviders as ProviderConfig[]) : []
+  const providers = Array.isArray(rawProviders) ? (rawProviders as DiagnosticProviderConfig[]) : []
   const flagsByProvider = await Promise.all(
     providers.map(async (provider) => {
       if (provider.type === 'env') {
@@ -65,7 +56,7 @@ export default defineEventHandler(async () => {
   return {
     config: {
       flagRouteBase: runtimeConfig.public?.openFeature?.flagRouteBase ?? '/api/feature-flags',
-      providers
+      providers: providers.map(sanitizeProvider)
     },
     flagsByProvider
   }
