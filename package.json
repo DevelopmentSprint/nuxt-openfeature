@@ -79,7 +79,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",
-    "@eslint/js": "^9.39.4",
+    "@eslint/js": "^10.0.1",
     "@nuxt/kit": "^4.4.6",
     "@nuxt/test-utils": "^3.23.0",
     "@tanstack/vue-query": "^5.100.10",
@@ -89,7 +89,7 @@
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/coverage-v8": "^3.2.4",
     "@vue/test-utils": "^2.4.10",
-    "eslint": "^9.39.2",
+    "eslint": "^10.4.0",
     "gitleaks-secret-scanner": "^2.1.1",
     "h3": "^1.15.11",
     "happy-dom": "^20.9.0",
