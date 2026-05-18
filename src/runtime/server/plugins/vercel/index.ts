@@ -4,7 +4,12 @@ import type { flagsClient as flagsClientFn } from '@vercel/flags-core'
 type FlagsClient = typeof flagsClientFn
 
 type VercelProviderOptions = {
-  flagsClient?: FlagsClient
+  options?: {
+    connectionString?: string
+  }
+  providerOptions?: {
+    flagsClient?: FlagsClient
+  }
 }
 
 export const buildVercelProvider = async (options?: VercelProviderOptions): Promise<Provider> => {
@@ -21,6 +26,19 @@ export const buildVercelProvider = async (options?: VercelProviderOptions): Prom
     throw new Error("Vercel provider configured but '@vercel/flags-core/openfeature' subpath is not resolvable. Ensure '@vercel/flags-core' is installed and recent enough to expose the openfeature entry.")
   })) as typeof import('@vercel/flags-core/openfeature')
 
-  const client = options?.flagsClient ?? core.flagsClient
-  return new ofMod.VercelProvider(client) as Provider
+  // Resolution order:
+  // 1. providerOptions.flagsClient — pre-built client, highest precedence
+  // 2. options.connectionString — explicit Vercel Flags connection string
+  // 3. fallback to core.flagsClient — Proxy that lazily reads process.env.FLAGS
+  const explicitClient = options?.providerOptions?.flagsClient
+  if (explicitClient) {
+    return new ofMod.VercelProvider(explicitClient) as Provider
+  }
+
+  const connectionString = options?.options?.connectionString
+  if (connectionString) {
+    return new ofMod.VercelProvider(connectionString) as Provider
+  }
+
+  return new ofMod.VercelProvider(core.flagsClient) as Provider
 }

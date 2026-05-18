@@ -96,7 +96,10 @@ export const adapters: Record<ProviderType, ProviderAdapter> = {
   vercel: {
     build: async (config) => {
       const { buildVercelProvider } = await import('../plugins/vercel')
-      return buildVercelProvider(config.providerOptions as Parameters<typeof buildVercelProvider>[0])
+      return buildVercelProvider({
+        options: config.options as Parameters<typeof buildVercelProvider>[0] extends infer T ? T extends { options?: infer P } ? P : never : never,
+        providerOptions: config.providerOptions as Parameters<typeof buildVercelProvider>[0] extends infer T ? T extends { providerOptions?: infer P } ? P : never : never
+      })
     },
     getDiagnostics: async () => ({ type: 'vercel', flags: [] })
   }

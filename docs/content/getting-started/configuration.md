@@ -44,8 +44,8 @@ export default defineNuxtConfig({
 | `type` | `'in-memory' \\| 'env' \\| 'flagsmith' \\| 'posthog' \\| 'vercel'` | yes | - | all providers | Provider adapter type. See per-provider pages: [Flagsmith](/providers/flagsmith), [PostHog](/providers/posthog), [Vercel](/providers/vercel). |
 | `envPrefix` | `string` | no | `'OPENFEATURE_FLAG_'` | `env` | Prefix used when reading flag values from environment variables. |
 | `flags` | `Record<string, OpenFeatureFlagDefinition>` | no | `{}` | `in-memory` | Static in-memory flag definitions. |
-| `options` | `Record<string, unknown>` | no | `{}` | `flagsmith`, `posthog` | Vendor SDK config. Flagsmith: `environmentKey`, `apiUrl`. PostHog: `apiKey`, `host`. |
-| `providerOptions` | `Record<string, unknown>` | no | `{}` | `flagsmith`, `posthog`, `vercel` | Provider-specific behavior options. Flagsmith: `useFlagsmithDefaults`. PostHog: `sendFeatureFlagEvents`. Vercel: `flagsClient` (custom `FlagsClient` instance). |
+| `options` | `Record<string, unknown>` | no | `{}` | `flagsmith`, `posthog`, `vercel` | Vendor SDK credentials. Flagsmith: `environmentKey`, `apiUrl`. PostHog: `apiKey`, `host`. Vercel: `connectionString`. |
+| `providerOptions` | `Record<string, unknown>` | no | `{}` | `flagsmith`, `posthog`, `vercel` | Provider-specific behavior options. Flagsmith: `useFlagsmithDefaults`. PostHog: `sendFeatureFlagEvents`. Vercel: `flagsClient` (pre-built `FlagsClient` instance — advanced). |
 
 ### `openFeature.providers[].flags.<flagKey>`
 
@@ -70,6 +70,32 @@ export default defineNuxtConfig({
 | `useFlagsmithDefaults` | `boolean` | no | provider default | Passed through to `FlagsmithOpenFeatureProvider`. |
 | `*` additional keys | `unknown` | no | - | Forwarded to OpenFeature Flagsmith provider options. |
 
+### `openFeature.providers[].options` (PostHog)
+
+| Variable | Type | Required | Default | Notes |
+| --- | --- | --- | --- | --- |
+| `apiKey` | `string` | no* | from `POSTHOG_API_KEY`, then `POSTHOG_KEY` | Required unless env vars provide it. |
+| `host` | `string` | no | from `POSTHOG_HOST`, then PostHog Cloud default | PostHog API host. |
+| `*` additional keys | `unknown` | no | - | Forwarded to `posthog-node` constructor options. |
+
+### `openFeature.providers[].providerOptions` (PostHog)
+
+| Variable | Type | Required | Default | Notes |
+| --- | --- | --- | --- | --- |
+| `sendFeatureFlagEvents` | `boolean` | no | `false` | Whether PostHog should record `$feature_flag_called` events on every evaluation. |
+
+### `openFeature.providers[].options` (Vercel)
+
+| Variable | Type | Required | Default | Notes |
+| --- | --- | --- | --- | --- |
+| `connectionString` | `string` | no | from `FLAGS` env var (read by SDK on first use) | Vercel Flags connection string. Accepts URI form (`flags:?sdkKey=vf_server_...`) or raw SDK key (`vf_server_...`). See [Vercel provider](/providers/vercel) for the three configuration paths. |
+
+### `openFeature.providers[].providerOptions` (Vercel)
+
+| Variable | Type | Required | Default | Notes |
+| --- | --- | --- | --- | --- |
+| `flagsClient` | `FlagsClient` | no | env-driven default | Pre-built `FlagsClient` from `@vercel/flags-core`. Wins over `options.connectionString` when both are set. Advanced use only. |
+
 ## Environment Variables
 
 ### Flagsmith provider
@@ -79,6 +105,20 @@ export default defineNuxtConfig({
 | `FLAGSMITH_ENVIRONMENT_KEY` | yes (unless set in `openFeature.providers[].options.environmentKey`) | - | Primary environment key source. |
 | `FLAGSMITH_KEY` | fallback | - | Used only if `FLAGSMITH_ENVIRONMENT_KEY` and `options.environmentKey` are absent. |
 | `FLAGSMITH_URL` | no | `https://edge.api.flagsmith.com/api/v1/` | Used unless `options.apiUrl` is provided. |
+
+### PostHog provider
+
+| Variable | Required | Default | Notes |
+| --- | --- | --- | --- |
+| `POSTHOG_API_KEY` | yes (unless set in `openFeature.providers[].options.apiKey`) | - | Primary API key source. |
+| `POSTHOG_KEY` | fallback | - | Used only if `POSTHOG_API_KEY` and `options.apiKey` are absent. |
+| `POSTHOG_HOST` | no | PostHog Cloud default | Used unless `options.host` is provided. |
+
+### Vercel provider
+
+| Variable | Required | Default | Notes |
+| --- | --- | --- | --- |
+| `FLAGS` | yes (unless set in `openFeature.providers[].options.connectionString` or `providerOptions.flagsClient`) | - | Auto-provisioned by Vercel's Feature Flags integration. Read lazily by `@vercel/flags-core` on first client access. |
 
 ### Env provider
 
