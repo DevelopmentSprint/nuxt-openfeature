@@ -1,5 +1,103 @@
 # Changelog
 
+## 0.2.1
+
+### Patch Changes
+
+- 3c969f5: **Tests:** raise overall coverage from 51.6% to 98.55% statements / 93.24% branches / 98.5% functions / 98.55% lines.
+
+  Added unit tests for every previously 0%-coverage file under `src/runtime/`:
+
+  - `server/utils/featureFlags.ts` — `getFeatureFlagContext` merge matrix and `evaluateFeatureFlag` dispatch (boolean/number/string/object/unsupported, timeout, error fallback).
+  - `runtime/utils/contextHeaders.ts` — single-header, chunked, and oversized-payload paths; key-order canonicalization determinism; base64url alphabet check.
+  - `server/api/feature-flags/{[key].get,index.get,diagnostics.get}.ts` — handler invocations with mocked `h3`/runtime config; provider-diagnostics delegation.
+  - `composables/useFeatureFlag.ts` — both `useFeatureFlags` and `useFeatureFlag`, including query-key composition, fetch wiring, default-value coercion, and slash trimming.
+  - `plugins/openfeature-context.client.ts` — `$fetch` wrapper attaches encoded headers, oversized-payload skip path, encoder-error warn path.
+  - `server/plugins/openfeature.server.ts` — Nitro plugin registers providers from runtime config and tolerates missing config.
+  - `components/FeatureFlag.vue` — slot rendering for enabled/fallback/pending states (uses `@vue/test-utils` + `happy-dom`).
+  - `runtime/server/plugins/flagsmith/index.ts` — full `buildFlagsmithProvider` + `fetchFlagsmithEnvironmentFlags` coverage including env-var fallbacks.
+
+  Strengthened existing partial coverage:
+
+  - `runtime/server/plugins/posthog/index.ts` (86.8% → 100%) — TYPE_MISMATCH and GENERAL-error paths for all four resolvers, `onClose` shutdown, `POSTHOG_KEY`/`POSTHOG_HOST` env fallbacks, non-Error throwables, non-object group/person property filtering.
+  - `runtime/server/plugins/vercel/index.ts` (90% → 100%) — separate install-hint test for the `/openfeature` subpath.
+  - `runtime/server/utils/providerRegistration.ts` (81.9% → 100%) — hybrid happy path (two successful providers → `MultiProvider` + `FirstMatchStrategy`), single-provider promotion, default `consoleLogger`, unknown-adapter fallback to `InMemoryProvider`.
+  - `src/utils/options.ts` (79.3% → 89.7%) — whitespace, missing-leading-slash, and `existingPublicOptions.flagRouteBase` fallback edge cases.
+
+  Tooling:
+
+  - Added `@vue/test-utils`, `happy-dom`, and `@vitejs/plugin-vue` as devDeps; configured Vitest with the Vue plugin and a `#imports` resolve alias pointing at `test/stubs/imports.ts` so `.vue` files load under unit tests without a Nuxt build.
+  - Added a `*.vue` ambient module declaration in `test/stubs/vue-sfc.d.ts` for TypeScript.
+
+  `FeatureFlag.vue` is now exercised at 100% line coverage. No source-file change to the published runtime in this entry — only tests and test tooling.
+
+- ded2bfd: **Chore:** upgrade `eslint` 9.39.2 → 10.4.0 and `@eslint/js` 9.39.4 → 10.0.1.
+
+  Supersedes Dependabot PR #75. Deferred from the dp7 upgrade sweep because major linter bumps historically require config migration; turned out our flat-config (`eslint.config.mjs`) uses only `js.configs.recommended` + `@typescript-eslint/parser`, so no rule or plugin migration is needed. `pnpm lint` and `pnpm docs:lint` pass clean under eslint 10 with the existing config.
+
+  Dev-only tooling — no impact on the published runtime.
+
+- 3c969f5: **Fix:** eliminate consumer-build "could not be resolved" warnings for unresolved optional provider SDKs.
+
+  Plugin wrappers (`runtime/server/plugins/{posthog,vercel,flagsmith}/index.mjs`) previously used static top-level `import` statements for their optional peer SDKs (`posthog-node`, `@vercel/flags-core`, `@vercel/flags-core/openfeature`, `flagsmith-nodejs`, `@openfeature/flagsmith-provider`). Consumer bundlers walking the dynamic-import target emitted warnings — and a future bundler pre-load could surface as `ERR_MODULE_NOT_FOUND` at runtime even when the affected provider was never configured.
+
+  The closed bead `nuxt-openfeature-37o` lazy-loaded the plugin wrapper file but left the SDK imports inside the wrapper static. This change moves the lazy boundary one layer deeper so optional SDKs are only imported when the provider is actually built.
+
+  - SDK value imports converted to `await import(...)` inside `buildXxxProvider`.
+  - Type-only references migrated to `import type` (zero runtime).
+  - Each dynamic import wraps a `.catch(...)` that throws a precise install hint (e.g. `"PostHog provider configured but 'posthog-node' is not installed. Run: pnpm add posthog-node"`) instead of an opaque module-resolution stack trace.
+  - `build.config.ts` `externals` list backfilled with `posthog-node`, `@vercel/flags-core`, and `@vercel/flags-core/openfeature` for internal consistency.
+  - New regression test (`test/unit/providers/dynamicSdkImport.test.ts`) verifies the plugin wrapper files load when their optional peers are absent, and that `buildXxxProvider` then throws the install hint without leaking option values.
+
+  **Public surface:** `buildPosthogProvider`, `buildVercelProvider`, and `buildFlagsmithProvider` are now `async` and return `Promise<Provider>`. The adapter registry already `await`s these, so module consumers are unaffected. Direct callers (if any) must `await` the result.
+
+- 61f1f83: **Release infra:** unify versioning and publishing into a single `changesets.yml` workflow.
+
+  The previous `changesets.yml` only created the version PR; a separate `publish.yml` was supposed to handle npm publish on tag push. But `changesets.yml` had no `publish:` directive configured, so it never created the `vX.Y.Z` tag — meaning `publish.yml` never fired and releases stalled at the version-bump commit on `main`.
+
+  This consolidation:
+
+  - `changesets.yml` now declares `id-token: write`, configures `actions/setup-node` with `registry-url`, and passes `publish: pnpm release` to `changesets/action@v1`. After a release PR merges, the action calls `pnpm release` (alias for `changeset publish`) which both pushes the `vX.Y.Z` tag and runs `npm publish` with provenance.
+  - `package.json#publishConfig.provenance: true` ensures `npm publish` always includes provenance attestation, no flag needed.
+  - `publish.yml` removed; the tag-push pipeline is no longer needed.
+  - `REPOSITORY_SETUP.md` updated to point npm Trusted Publisher at `changesets.yml` (was `publish.yml`).
+  - `scripts/oss/setup-branch-protection.sh` no longer lists `analyze (javascript-typescript)` as required (it stopped running on PRs after the CI consolidation; was already removed from live branch protection).
+
+  **Action required:** the npm Trusted Publisher config on the package (npmjs.com → package access) must be updated to reference `changesets.yml` instead of `publish.yml`. Without that update, the next release will fail at npm publish with an unauthorized error.
+
+- b8226ec: **Chore:** coordinated package upgrade sweep — supersedes 13 individual Dependabot PRs that were blocked by lockfile sync and Nuxt 4.4 type skew.
+
+  Bumps in one coherent change so peer-deps line up across the graph:
+
+  **Root devDependencies:**
+
+  - `nuxt` 4.3.1 → 4.4.6 (was #78)
+  - `@nuxt/kit` 4.3.1 → 4.4.6 (was #86)
+  - `vue` 3.5.33 → 3.5.34 (was #83)
+  - `vue-tsc` 3.2.7 → 3.3.0 (was #68)
+  - `@tanstack/vue-query` 5.100.7 → 5.100.10 (was #84)
+  - `@typescript-eslint/parser` 8.59.1 → 8.59.4 (was #81)
+  - `h3` 1.15.5 → 1.15.11 (was #71)
+  - `posthog-node` 5.33.0 → 5.34.4 (was #85)
+  - `@changesets/cli` 2.29.8 → 2.31.0 (was #70)
+
+  **Docs devDependencies:**
+
+  - `nuxt` 4.4.4 → 4.4.6 (was #77)
+  - `tailwindcss` 4.2.4 → 4.3.0 (was #80)
+  - `@iconify-json/simple-icons` 1.2.80 → 1.2.82 (was #79)
+  - `@iconify-json/lucide` 1.2.105 → 1.2.107 (was #82)
+
+  **Fix landed alongside the bumps:** added `pnpm.overrides.vite: "^7.3.3"` to root `package.json`. Without it, `nuxt 4.4` pulls `vite@7.3.3` while `@nuxt/test-utils@3.23` and `@vitest/coverage-v8@3.2.4` still resolve `vite@7.3.3`'s peer down to `vite@7.3.1`, producing two Vite versions in the graph. The TS2769 typecheck error on `vitest.config.ts` `plugins: [vue()]` came from `@vitejs/plugin-vue@6` being resolved against the newer Vite types while `vitest`'s `defineConfig` was resolved against the older ones. The override forces a single `vite@7.3.3` and eliminates the skew.
+
+  **Out of scope (left as open PRs):**
+
+  - `eslint` 9 → 10 (#75) — major bump, requires `eslint.config.mjs` migration.
+  - `actions/dependency-review-action` 4 → 5 (#76) — GH Action, unrelated to lockfile sync.
+  - `chore(release): version packages` (#63) — release-trigger PR.
+
+  After this lands, Dependabot PRs #68, #70, #71, #77-86 (except #75 and #76) will be closed as superseded.
+
 ## 0.2.0
 
 ### Minor Changes
