@@ -1,6 +1,6 @@
-import { FlagsmithOpenFeatureProvider, type FlagsmithProviderConfig } from '@openfeature/flagsmith-provider'
+import type { FlagsmithProviderConfig } from '@openfeature/flagsmith-provider'
 import type { Provider } from '@openfeature/server-sdk'
-import { Flagsmith, type FlagsmithConfig, type FlagsmithValue } from 'flagsmith-nodejs'
+import type { FlagsmithConfig, FlagsmithValue } from 'flagsmith-nodejs'
 
 const DEFAULT_FLAGSMITH_URL = 'https://edge.api.flagsmith.com/api/v1/'
 
@@ -9,7 +9,17 @@ type FlagsmithProviderOptions = {
   provider?: FlagsmithProviderConfig
 }
 
-export const buildFlagsmithProvider = (options?: FlagsmithProviderOptions): Provider => {
+const loadFlagsmithSdk = async () => {
+  const sdk = await import('flagsmith-nodejs').catch(() => {
+    throw new Error("Flagsmith provider configured but 'flagsmith-nodejs' is not installed. Run: pnpm add flagsmith-nodejs")
+  })
+  const ofMod = await import('@openfeature/flagsmith-provider').catch(() => {
+    throw new Error("Flagsmith provider configured but '@openfeature/flagsmith-provider' is not installed. Run: pnpm add @openfeature/flagsmith-provider")
+  })
+  return { Flagsmith: sdk.Flagsmith, FlagsmithOpenFeatureProvider: ofMod.FlagsmithOpenFeatureProvider }
+}
+
+export const buildFlagsmithProvider = async (options?: FlagsmithProviderOptions): Promise<Provider> => {
   const environmentKey
     = options?.flagsmith?.environmentKey
       ?? process.env.FLAGSMITH_ENVIRONMENT_KEY
@@ -20,6 +30,7 @@ export const buildFlagsmithProvider = (options?: FlagsmithProviderOptions): Prov
     throw new Error('Flagsmith provider requires FLAGSMITH_ENVIRONMENT_KEY or flagsmith.environmentKey')
   }
 
+  const { Flagsmith, FlagsmithOpenFeatureProvider } = await loadFlagsmithSdk()
   const apiUrl = options?.flagsmith?.apiUrl ?? process.env.FLAGSMITH_URL ?? DEFAULT_FLAGSMITH_URL
 
   const flagsmith = new Flagsmith({
@@ -42,6 +53,7 @@ export const fetchFlagsmithEnvironmentFlags = async (options?: FlagsmithProvider
     throw new Error('Flagsmith provider requires FLAGSMITH_ENVIRONMENT_KEY or flagsmith.environmentKey')
   }
 
+  const { Flagsmith } = await loadFlagsmithSdk()
   const apiUrl = options?.flagsmith?.apiUrl ?? process.env.FLAGSMITH_URL ?? DEFAULT_FLAGSMITH_URL
 
   const flagsmith = new Flagsmith({

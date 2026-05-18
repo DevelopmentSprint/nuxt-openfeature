@@ -18,7 +18,7 @@ describe('Vercel OpenFeature provider', () => {
   it('uses the default flagsClient when no override is provided', async () => {
     const { buildVercelProvider } = await import('../../../src/runtime/server/plugins/vercel')
 
-    const provider = buildVercelProvider() as unknown as { __vercel: boolean, client: unknown }
+    const provider = (await buildVercelProvider()) as unknown as { __vercel: boolean, client: unknown }
 
     expect(VercelProviderCtor).toHaveBeenCalledWith(defaultFlagsClient)
     expect(provider.__vercel).toBe(true)
@@ -27,9 +27,11 @@ describe('Vercel OpenFeature provider', () => {
 
   it('uses an injected flagsClient when provided', async () => {
     const { buildVercelProvider } = await import('../../../src/runtime/server/plugins/vercel')
-    const customClient = { __custom: true } as unknown as Parameters<typeof buildVercelProvider>[0] extends { flagsClient?: infer C } ? C : never
+    type BuildArg = Parameters<typeof buildVercelProvider>[0]
+    type CustomClient = NonNullable<BuildArg> extends { flagsClient?: infer C } ? C : never
+    const customClient = { __custom: true } as unknown as CustomClient
 
-    const provider = buildVercelProvider({ flagsClient: customClient }) as unknown as { __vercel: boolean, client: unknown }
+    const provider = (await buildVercelProvider({ flagsClient: customClient })) as unknown as { __vercel: boolean, client: unknown }
 
     expect(VercelProviderCtor).toHaveBeenCalledWith(customClient)
     expect(provider.client).toBe(customClient)

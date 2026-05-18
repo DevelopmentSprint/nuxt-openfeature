@@ -1,5 +1,5 @@
 import { ErrorCode, type EvaluationContext, type JsonValue, type Logger, type Provider, type ResolutionDetails, StandardResolutionReasons } from '@openfeature/server-sdk'
-import { PostHog, type PostHogOptions } from 'posthog-node'
+import type { PostHog, PostHogOptions } from 'posthog-node'
 
 const PROVIDER_NAME = 'PostHog OpenFeature Provider'
 
@@ -177,16 +177,20 @@ export class PosthogOpenFeatureProvider implements Provider {
   }
 }
 
-export const buildPosthogProvider = (options?: PosthogProviderOptions): Provider => {
+export const buildPosthogProvider = async (options?: PosthogProviderOptions): Promise<Provider> => {
   const apiKey = options?.posthog?.apiKey ?? process.env.POSTHOG_API_KEY ?? process.env.POSTHOG_KEY ?? ''
   if (!apiKey) {
     throw new Error('PostHog provider requires POSTHOG_API_KEY or posthog.apiKey')
   }
 
+  const mod = await import('posthog-node').catch(() => {
+    throw new Error("PostHog provider configured but 'posthog-node' is not installed. Run: pnpm add posthog-node")
+  })
+
   const host = options?.posthog?.host ?? process.env.POSTHOG_HOST
 
   const { apiKey: _apiKey, host: _host, ...rest } = options?.posthog ?? {}
-  const client = new PostHog(apiKey, { ...rest, ...(host ? { host } : {}) })
+  const client = new mod.PostHog(apiKey, { ...rest, ...(host ? { host } : {}) })
 
   return new PosthogOpenFeatureProvider(client, options?.sendFeatureFlagEvents ?? false)
 }
