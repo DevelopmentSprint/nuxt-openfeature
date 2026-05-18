@@ -27,25 +27,25 @@ describe('PostHog OpenFeature provider', () => {
 
   it('throws when no API key is configured', async () => {
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    expect(() => buildPosthogProvider()).toThrow(/POSTHOG_API_KEY/)
+    await expect(buildPosthogProvider()).rejects.toThrow(/POSTHOG_API_KEY/)
   })
 
   it('reads API key from POSTHOG_API_KEY when no option is passed', async () => {
     process.env.POSTHOG_API_KEY = 'phc_env_key'
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    buildPosthogProvider()
+    await buildPosthogProvider()
     expect(PostHogCtor).toHaveBeenCalledWith('phc_env_key', {})
   })
 
   it('passes posthog options including host through to the client', async () => {
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    buildPosthogProvider({ posthog: { apiKey: 'phc_inline', host: 'https://us.i.posthog.com' } })
+    await buildPosthogProvider({ posthog: { apiKey: 'phc_inline', host: 'https://us.i.posthog.com' } })
     expect(PostHogCtor).toHaveBeenCalledWith('phc_inline', { host: 'https://us.i.posthog.com' })
   })
 
   it('returns ERROR + TARGETING_KEY_MISSING when context lacks targetingKey', async () => {
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    const provider = buildPosthogProvider({ posthog: { apiKey: 'phc' } })
+    const provider = await buildPosthogProvider({ posthog: { apiKey: 'phc' } })
 
     const result = await provider.resolveBooleanEvaluation('flag', false, {}, NOOP_LOGGER)
 
@@ -58,7 +58,7 @@ describe('PostHog OpenFeature provider', () => {
   it('resolves boolean flags via getFeatureFlag with TARGETING_MATCH on hit', async () => {
     getFeatureFlag.mockResolvedValueOnce(true)
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    const provider = buildPosthogProvider({ posthog: { apiKey: 'phc' } })
+    const provider = await buildPosthogProvider({ posthog: { apiKey: 'phc' } })
 
     const result = await provider.resolveBooleanEvaluation('flag', false, { targetingKey: 'user-1' }, NOOP_LOGGER)
 
@@ -69,7 +69,7 @@ describe('PostHog OpenFeature provider', () => {
   it('returns DEFAULT when boolean flag is undefined', async () => {
     getFeatureFlag.mockResolvedValueOnce(undefined)
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    const provider = buildPosthogProvider({ posthog: { apiKey: 'phc' } })
+    const provider = await buildPosthogProvider({ posthog: { apiKey: 'phc' } })
 
     const result = await provider.resolveBooleanEvaluation('flag', false, { targetingKey: 'user-1' }, NOOP_LOGGER)
 
@@ -79,7 +79,7 @@ describe('PostHog OpenFeature provider', () => {
   it('returns TYPE_MISMATCH when boolean evaluation returns a string variant', async () => {
     getFeatureFlag.mockResolvedValueOnce('treatment')
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    const provider = buildPosthogProvider({ posthog: { apiKey: 'phc' } })
+    const provider = await buildPosthogProvider({ posthog: { apiKey: 'phc' } })
 
     const result = await provider.resolveBooleanEvaluation('flag', false, { targetingKey: 'user-1' }, NOOP_LOGGER)
 
@@ -91,7 +91,7 @@ describe('PostHog OpenFeature provider', () => {
   it('resolves string flag variants and exposes variant in details', async () => {
     getFeatureFlag.mockResolvedValueOnce('treatment-b')
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    const provider = buildPosthogProvider({ posthog: { apiKey: 'phc' } })
+    const provider = await buildPosthogProvider({ posthog: { apiKey: 'phc' } })
 
     const result = await provider.resolveStringEvaluation('flag', 'control', { targetingKey: 'user-1' }, NOOP_LOGGER)
 
@@ -101,7 +101,7 @@ describe('PostHog OpenFeature provider', () => {
   it('resolves number flags via getFeatureFlagPayload', async () => {
     getFeatureFlagPayload.mockResolvedValueOnce(42)
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    const provider = buildPosthogProvider({ posthog: { apiKey: 'phc' } })
+    const provider = await buildPosthogProvider({ posthog: { apiKey: 'phc' } })
 
     const result = await provider.resolveNumberEvaluation('flag', 0, { targetingKey: 'user-1' }, NOOP_LOGGER)
 
@@ -111,7 +111,7 @@ describe('PostHog OpenFeature provider', () => {
   it('resolves object flags via getFeatureFlagPayload', async () => {
     getFeatureFlagPayload.mockResolvedValueOnce({ enabled: true, variant: 'v2' })
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    const provider = buildPosthogProvider({ posthog: { apiKey: 'phc' } })
+    const provider = await buildPosthogProvider({ posthog: { apiKey: 'phc' } })
 
     const result = await provider.resolveObjectEvaluation('flag', { enabled: false, variant: 'v1' }, { targetingKey: 'user-1' }, NOOP_LOGGER)
 
@@ -122,7 +122,7 @@ describe('PostHog OpenFeature provider', () => {
   it('forwards person + group context to PostHog', async () => {
     getFeatureFlag.mockResolvedValueOnce(true)
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    const provider = buildPosthogProvider({ posthog: { apiKey: 'phc' } })
+    const provider = await buildPosthogProvider({ posthog: { apiKey: 'phc' } })
 
     await provider.resolveBooleanEvaluation('flag', false, {
       targetingKey: 'user-1',
@@ -142,7 +142,7 @@ describe('PostHog OpenFeature provider', () => {
   it('returns ERROR + GENERAL when the SDK throws', async () => {
     getFeatureFlag.mockRejectedValueOnce(new Error('network down'))
     const { buildPosthogProvider } = await import('../../../src/runtime/server/plugins/posthog')
-    const provider = buildPosthogProvider({ posthog: { apiKey: 'phc' } })
+    const provider = await buildPosthogProvider({ posthog: { apiKey: 'phc' } })
 
     const result = await provider.resolveBooleanEvaluation('flag', false, { targetingKey: 'user-1' }, NOOP_LOGGER)
 
