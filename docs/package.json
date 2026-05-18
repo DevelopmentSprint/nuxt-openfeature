@@ -12,13 +12,13 @@
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.2",
-    "@iconify-json/lucide": "^1.2.79",
-    "@iconify-json/simple-icons": "^1.2.39",
+    "@iconify-json/lucide": "^1.2.108",
+    "@iconify-json/simple-icons": "^1.2.82",
     "@nuxt/content": "^3.7.1",
     "@nuxt/ui": "^4.0.1",
     "better-sqlite3": "^12.4.1",
-    "nuxt": "^4.3.0",
-    "tailwindcss": "^4.1.16"
+    "nuxt": "^4.4.6",
+    "tailwindcss": "^4.3.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
