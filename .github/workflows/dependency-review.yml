@@ -26,7 +26,7 @@ jobs:
           echo "status=${status}" >> "$GITHUB_OUTPUT"
       - name: Dependency Review
         if: ${{ steps.depgraph.outputs.status == 'enabled' }}
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
       - name: Dependency Review skipped
         if: ${{ steps.depgraph.outputs.status != 'enabled' }}
         run: |
