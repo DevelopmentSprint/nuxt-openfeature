@@ -78,29 +78,34 @@
     }
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.8",
+    "@changesets/cli": "^2.31.0",
     "@eslint/js": "^9.39.4",
-    "@nuxt/kit": "^4.3.0",
+    "@nuxt/kit": "^4.4.6",
     "@nuxt/test-utils": "^3.23.0",
-    "@tanstack/vue-query": "^5.100.7",
+    "@tanstack/vue-query": "^5.100.10",
     "@types/node": "^25.6.0",
-    "@typescript-eslint/parser": "^8.59.1",
+    "@typescript-eslint/parser": "^8.59.4",
     "@vercel/flags-core": "^1.4.0",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/coverage-v8": "^3.2.4",
     "@vue/test-utils": "^2.4.10",
     "eslint": "^9.39.2",
     "gitleaks-secret-scanner": "^2.1.1",
-    "h3": "^1.15.5",
+    "h3": "^1.15.11",
     "happy-dom": "^20.9.0",
     "husky": "^9.1.7",
-    "nuxt": "^4.3.0",
-    "posthog-node": "^5.33.0",
+    "nuxt": "^4.4.6",
+    "posthog-node": "^5.34.4",
     "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
     "vitest": "^3.2.4",
-    "vue": "^3.5.33",
-    "vue-tsc": "^3.2.7"
+    "vue": "^3.5.34",
+    "vue-tsc": "^3.3.0"
   },
-  "packageManager": "pnpm@10.26.1"
+  "packageManager": "pnpm@10.26.1",
+  "pnpm": {
+    "overrides": {
+      "vite": "^7.3.3"
+    }
+  }
 }
