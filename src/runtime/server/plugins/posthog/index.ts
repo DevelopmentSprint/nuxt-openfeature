@@ -183,9 +183,12 @@ export const buildPosthogProvider = async (options?: PosthogProviderOptions): Pr
     throw new Error('PostHog provider requires POSTHOG_API_KEY or posthog.apiKey')
   }
 
-  const mod = await import('posthog-node').catch(() => {
+  // Variable indirection defeats bundler static analysis so consumer Vite/Rollup
+  // builds don't emit "could not be resolved" warnings for the optional peer.
+  const posthogSpecifier = 'posthog-node'
+  const mod = (await import(posthogSpecifier).catch(() => {
     throw new Error("PostHog provider configured but 'posthog-node' is not installed. Run: pnpm add posthog-node")
-  })
+  })) as typeof import('posthog-node')
 
   const host = options?.posthog?.host ?? process.env.POSTHOG_HOST
 

@@ -10,12 +10,19 @@ type FlagsmithProviderOptions = {
 }
 
 const loadFlagsmithSdk = async () => {
-  const sdk = await import('flagsmith-nodejs').catch(() => {
+  // Variable indirection defeats bundler static analysis so consumer Vite/Rollup
+  // builds don't emit "could not be resolved" warnings for the optional peers.
+  const sdkSpecifier = 'flagsmith-nodejs'
+  const ofSpecifier = '@openfeature/flagsmith-provider'
+
+  const sdk = (await import(sdkSpecifier).catch(() => {
     throw new Error("Flagsmith provider configured but 'flagsmith-nodejs' is not installed. Run: pnpm add flagsmith-nodejs")
-  })
-  const ofMod = await import('@openfeature/flagsmith-provider').catch(() => {
+  })) as typeof import('flagsmith-nodejs')
+
+  const ofMod = (await import(ofSpecifier).catch(() => {
     throw new Error("Flagsmith provider configured but '@openfeature/flagsmith-provider' is not installed. Run: pnpm add @openfeature/flagsmith-provider")
-  })
+  })) as typeof import('@openfeature/flagsmith-provider')
+
   return { Flagsmith: sdk.Flagsmith, FlagsmithOpenFeatureProvider: ofMod.FlagsmithOpenFeatureProvider }
 }
 
