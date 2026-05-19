@@ -8,7 +8,7 @@ import {
   createResolver,
   defineNuxtModule
 } from '@nuxt/kit'
-import { normalizeOpenFeatureOptions } from './utils/options'
+import { mergeOpenFeatureLayerOptions, normalizeOpenFeatureOptions } from './utils/options'
 import type { OpenFeatureModuleOptions, OpenFeatureProviderConfig } from './types'
 
 export type {
@@ -37,7 +37,17 @@ export default defineNuxtModule<OpenFeatureModuleOptions>({
     const existingRuntime = (nuxt.options.runtimeConfig.openFeature || {}) as OpenFeatureModuleOptions
     const existingPublic = (nuxt.options.runtimeConfig.public?.openFeature || {}) as { flagRouteBase?: string }
 
-    const normalized = normalizeOpenFeatureOptions(moduleOptions, existingRuntime, existingPublic)
+    // Layer chain: nuxt.options._layers is ordered root-first, app-last. We collect
+    // every layer's openFeature config (the app's moduleOptions corresponds to the
+    // last entry but defu may have already mutated it, so we trust _layers as the
+    // authoritative source) and merge with app-first provider precedence.
+    const layered = (nuxt.options._layers ?? []).map((layer) => {
+      const cfg = (layer.config as { openFeature?: OpenFeatureModuleOptions } | undefined)?.openFeature
+      return cfg
+    })
+    const layerMerged = mergeOpenFeatureLayerOptions(layered.length > 0 ? layered : [moduleOptions])
+
+    const normalized = normalizeOpenFeatureOptions(layerMerged, existingRuntime, existingPublic)
     const flagRouteBase = normalized.public.flagRouteBase
 
     addImportsDir(resolver.resolve('./runtime/composables'))
