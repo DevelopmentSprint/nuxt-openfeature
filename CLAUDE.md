@@ -7,6 +7,41 @@ Agents are expected to prioritize procedural correctness over speed.
 
 ---
 
+## Agent environment
+
+Workflow ceremony is published as installable plugins, so a fix reaches every
+project instead of the one repo someone remembered to edit:
+
+```
+/plugin marketplace add ribrewguy/agent-skills
+/plugin install throughline@ribrewguy-skills
+/plugin install multi-agent-git-workflow@ribrewguy-skills
+/plugin install task-handoff-summaries@ribrewguy-skills
+/plugin install structured-code-review@ribrewguy-skills
+```
+
+`throughline` is the entry point and dispatches to the rest: the Kickoff
+Declaration and the three completion phases, branches / worktrees / commits /
+merge authority, the review format and the three summary shapes.
+
+Three rules those plugins carry that get violated under pressure:
+
+- **Gates are not acceptance.** Nothing merges to the trunk without an explicit
+  yes from the user. Passing CI is not acceptance.
+- **A design doc is work.** The worktree precedes the first authored file, not
+  the first code edit.
+- **Cleanup belongs to the same close-out as the merge** — worktree removed
+  before the branch, because git refuses the other order.
+
+**Precedence: this file and this repo's own policies win over any plugin.**
+Thinning this file against them is a separate decision.
+
+`CLAUDE.md` and `AGENTS.md` are functional duplicates for different tooling and
+**must stay byte-identical** — a divergence leaves one tool's agent operating on
+rules the other does not have, with nothing to report it.
+
+---
+
 ## 🔐 Agent Prime Directive
 
 When executing work in this repository, the agent MUST obey the following non-negotiable directives:
@@ -473,3 +508,29 @@ No silent skipping.
 * Do not casually rewrite them.
 * Keep this file short; move details into policy pointers.
 * Maintain consistency with other instruction files unless directed otherwise.
+
+## Landing the Plane (Session Completion)
+
+**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+
+**MANDATORY WORKFLOW:**
+
+1. **File issues for remaining work** - Create issues for anything that needs follow-up
+2. **Run quality gates** (if code changed) - Tests, linters, builds
+3. **Update issue status** - Close finished work, update in-progress items
+4. **PUSH TO REMOTE** - This is MANDATORY:
+   ```bash
+   git pull --rebase
+   bd sync
+   git push
+   git status  # MUST show "up to date with origin"
+   ```
+5. **Clean up** - Clear stashes, prune remote branches
+6. **Verify** - All changes committed AND pushed
+7. **Hand off** - Provide context for next session
+
+**CRITICAL RULES:**
+- Work is NOT complete until `git push` succeeds
+- NEVER stop before pushing - that leaves work stranded locally
+- NEVER say "ready to push when you are" - YOU must push
+- If push fails, resolve and retry until it succeeds
