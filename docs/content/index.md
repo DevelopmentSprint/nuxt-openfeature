@@ -20,5 +20,5 @@ title: Nuxt OpenFeature Docs
 
 ## Project Links
 
-- Source: [github.com/ribrewguy/nuxt-openfeature](https://github.com/ribrewguy/nuxt-openfeature)
-- Issues: [github.com/ribrewguy/nuxt-openfeature/issues](https://github.com/ribrewguy/nuxt-openfeature/issues)
+- Source: [github.com/DevelopmentSprint/nuxt-openfeature](https://github.com/DevelopmentSprint/nuxt-openfeature)
+- Issues: [github.com/DevelopmentSprint/nuxt-openfeature/issues](https://github.com/DevelopmentSprint/nuxt-openfeature/issues)

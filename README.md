@@ -1,10 +1,10 @@
 # @ribrewguy/nuxt-openfeature
 
-[![codecov](https://codecov.io/gh/ribrewguy/nuxt-openfeature/graph/badge.svg)](https://codecov.io/gh/ribrewguy/nuxt-openfeature)
+[![codecov](https://codecov.io/gh/DevelopmentSprint/nuxt-openfeature/graph/badge.svg)](https://codecov.io/gh/DevelopmentSprint/nuxt-openfeature)
 
 Nuxt 4 OpenFeature module extracted from the application repo.
 
-📖 **Documentation:** https://ribrewguy.github.io/nuxt-openfeature/
+📖 **Documentation:** https://developmentsprint.github.io/nuxt-openfeature/
 
 ## Install
 
@@ -67,7 +67,7 @@ pnpm pack
 
 ## Documentation
 
-- Live site: **https://ribrewguy.github.io/nuxt-openfeature/**
+- Live site: **https://developmentsprint.github.io/nuxt-openfeature/**
 - Source: `docs/`
 - Local docs dev server: `pnpm docs:dev`
 - Hosting: GitHub Pages, deployed automatically from `main` by `.github/workflows/docs-pages.yml`

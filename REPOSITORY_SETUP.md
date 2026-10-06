@@ -9,7 +9,7 @@ Configure trusted publishing for `@ribrewguy/nuxt-openfeature`:
 1. Open npm package access settings:
    - `https://www.npmjs.com/package/@ribrewguy/nuxt-openfeature/access`
 2. In **Publishing access**, add a GitHub Actions trusted publisher with:
-   - Owner: `ribrewguy`
+   - Owner: `DevelopmentSprint`
    - Repository: `nuxt-openfeature`
    - Workflow file: `changesets.yml`
    - Environment: _(leave blank)_
@@ -28,7 +28,7 @@ Authenticate GitHub CLI, then apply protection for `main`:
 
 ```bash
 gh auth login
-scripts/oss/setup-branch-protection.sh ribrewguy/nuxt-openfeature
+scripts/oss/setup-branch-protection.sh DevelopmentSprint/nuxt-openfeature
 ```
 
 If the repo is newly created and has no remote branches yet, push `main` first:

@@ -62,7 +62,7 @@ const versions = computed<DropdownMenuItem[]>(() => [
         color="neutral"
         variant="ghost"
         icon="i-simple-icons-github"
-        to="https://github.com/ribrewguy/nuxt-openfeature"
+        to="https://github.com/DevelopmentSprint/nuxt-openfeature"
         target="_blank"
         aria-label="GitHub repository"
       />
