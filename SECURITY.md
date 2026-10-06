@@ -6,7 +6,7 @@ Security fixes are applied to the latest released version.
 
 ## Reporting a Vulnerability
 
-- Open a GitHub issue: https://github.com/ribrewguy/nuxt-openfeature/issues/new
+- Open a GitHub issue: https://github.com/DevelopmentSprint/nuxt-openfeature/issues/new
 - Include reproduction steps, impact, and suggested remediation if available.
 
 All security and non-security issues are tracked through GitHub Issues.

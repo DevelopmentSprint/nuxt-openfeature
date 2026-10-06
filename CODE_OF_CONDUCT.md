@@ -28,7 +28,7 @@ This Code of Conduct applies in project spaces and in public spaces when represe
 
 ## Reporting
 
-Report unacceptable behavior by opening a GitHub issue: https://github.com/ribrewguy/nuxt-openfeature/issues/new
+Report unacceptable behavior by opening a GitHub issue: https://github.com/DevelopmentSprint/nuxt-openfeature/issues/new
 
 ## Enforcement
 
