@@ -3,6 +3,7 @@ import type { ContentNavigationItem } from '@nuxt/content'
 import type { NavigationMenuItem } from '#ui/types'
 
 const appConfig = useAppConfig()
+const config = useRuntimeConfig()
 const route = useRoute()
 const radius = computed(() => `:root { --ui-radius: ${appConfig.theme?.radius ?? 0.25}rem; }`)
 
@@ -51,6 +52,20 @@ const links = computed<NavigationMenuItem[]>(() => [
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+
+    <footer class="border-t border-(--ui-border) py-6 text-sm text-(--ui-text-muted)">
+      <UContainer class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <span>DevelopmentSprint</span>
+        <a
+          href="https://github.com/DevelopmentSprint/nuxt-openfeature/releases"
+          class="hover:underline"
+        >Nuxt OpenFeature v{{ config.public.docsVersion }}</a>
+        <a
+          href="https://github.com/DevelopmentSprint/nuxt-openfeature/blob/main/LICENSE"
+          class="hover:underline"
+        >MIT License</a>
+      </UContainer>
+    </footer>
 
     <ClientOnly>
       <LazyUContentSearch :files="files" :navigation="nav" :multiple="true" :kbds="['meta', 'K']" />

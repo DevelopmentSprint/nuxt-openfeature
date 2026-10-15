@@ -5,12 +5,14 @@ on:
     branches:
       - main
     paths:
+      - package.json
       - docs/**
       - .github/workflows/docs-pages.yml
   push:
     branches:
       - main
     paths:
+      - package.json
       - docs/**
       - .github/workflows/docs-pages.yml
 

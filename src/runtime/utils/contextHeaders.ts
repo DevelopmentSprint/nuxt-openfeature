@@ -75,7 +75,7 @@ const splitChunks = (value: string, size: number): string[] => {
 }
 
 /**
- * Build OpenFeature context headers using a chunked, signed payload.
+ * Build OpenFeature context headers using a chunked payload with a SHA-256 checksum.
  *
  * Steps:
  * 1) Canonicalize the JSON by sorting keys (deep).

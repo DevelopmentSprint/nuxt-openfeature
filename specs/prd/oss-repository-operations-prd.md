@@ -44,8 +44,9 @@ and publicly visible quality signal.
 - `docs/` is a standalone pnpm project, not a workspace package; CI
   installs it explicitly.
 - Coverage uses the Vitest v8 provider with Codecov as the uploader.
-  Codecov is tokenless by default for public repos; `CODECOV_TOKEN`
-  remains an optional repo secret for fork-PR stability.
+  Codecov authenticates main-branch uploads with GitHub OIDC, binding them
+  to the current repository owner. Public PR uploads use tokenless mode,
+  enabled in the DevelopmentSprint Codecov organization settings.
 
 ## Acceptance Intent
 

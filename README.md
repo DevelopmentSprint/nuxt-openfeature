@@ -1,22 +1,22 @@
-# @ribrewguy/nuxt-openfeature
+# @developmentsprint/nuxt-openfeature
 
-[![codecov](https://codecov.io/gh/ribrewguy/nuxt-openfeature/graph/badge.svg)](https://codecov.io/gh/ribrewguy/nuxt-openfeature)
+[![codecov](https://codecov.io/gh/DevelopmentSprint/nuxt-openfeature/graph/badge.svg)](https://codecov.io/gh/DevelopmentSprint/nuxt-openfeature)
 
 Nuxt 4 OpenFeature module extracted from the application repo.
 
-📖 **Documentation:** https://ribrewguy.github.io/nuxt-openfeature/
+📖 **Documentation:** https://developmentsprint.github.io/nuxt-openfeature/
 
 ## Install
 
 ```bash
-pnpm add @ribrewguy/nuxt-openfeature
+pnpm add @developmentsprint/nuxt-openfeature
 ```
 
 ## Usage
 
 ```ts
 export default defineNuxtConfig({
-  modules: ['@ribrewguy/nuxt-openfeature'],
+  modules: ['@developmentsprint/nuxt-openfeature'],
   openFeature: {
     providers: [
       {
@@ -37,11 +37,19 @@ export default defineNuxtConfig({
 })
 ```
 
+## Migrate from @ribrewguy
+
+Replace `@ribrewguy/nuxt-openfeature` with `@developmentsprint/nuxt-openfeature` in your dependencies, Nuxt `modules` list, and package imports. Version 0.2.5 continues the existing version history; the scope change does not change the `openFeature` configuration key or runtime APIs. See the [migration guide](https://developmentsprint.github.io/nuxt-openfeature/getting-started/installation).
+
+## License
+
+[MIT](./LICENSE).
+
 ## Release
 
 - Create a release changeset: `pnpm changeset`
 - Merge to `main` so `changesets.yml` opens/updates the release PR
-- Merge the release PR — `changesets.yml` automatically tags `vX.Y.Z` and publishes to npm with provenance
+- Merge the release PR — `changesets.yml` automatically tags `@developmentsprint/nuxt-openfeature@X.Y.Z` and publishes to npm with provenance
 - Ensure npm Trusted Publisher is configured for this repository pointing at `.github/workflows/changesets.yml`
 - One-time maintainer setup details: `REPOSITORY_SETUP.md`
 
@@ -67,7 +75,7 @@ pnpm pack
 
 ## Documentation
 
-- Live site: **https://ribrewguy.github.io/nuxt-openfeature/**
+- Live site: **https://developmentsprint.github.io/nuxt-openfeature/**
 - Source: `docs/`
 - Local docs dev server: `pnpm docs:dev`
 - Hosting: GitHub Pages, deployed automatically from `main` by `.github/workflows/docs-pages.yml`
