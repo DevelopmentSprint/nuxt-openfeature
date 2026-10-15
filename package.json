@@ -82,7 +82,7 @@
     "@eslint/js": "^10.0.1",
     "@nuxt/kit": "^4.4.6",
     "@nuxt/test-utils": "^3.23.0",
-    "@tanstack/vue-query": "^5.100.10",
+    "@tanstack/vue-query": "^5.104.2",
     "@types/node": "^25.6.0",
     "@typescript-eslint/parser": "^8.59.4",
     "@vercel/flags-core": "^1.4.0",
