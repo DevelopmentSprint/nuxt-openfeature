@@ -23,7 +23,7 @@ if (!page.value) {
 
 useSeoMeta({
   title: () => page.value?.title ?? 'Nuxt OpenFeature Docs',
-  description: () => page.value?.description ?? 'Documentation for @ribrewguy/nuxt-openfeature'
+  description: () => page.value?.description ?? 'Documentation for @developmentsprint/nuxt-openfeature'
 })
 </script>
 

@@ -35,7 +35,7 @@ const versions = computed<DropdownMenuItem[]>(() => [
         :items="versions"
         :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width) min-w-0' }"
         size="xs"
-        class="hidden sm:flex"
+        class="flex"
       >
         <UButton
           :label="`v${config.public.docsVersion}`"
@@ -62,7 +62,7 @@ const versions = computed<DropdownMenuItem[]>(() => [
         color="neutral"
         variant="ghost"
         icon="i-simple-icons-github"
-        to="https://github.com/ribrewguy/nuxt-openfeature"
+        to="https://github.com/DevelopmentSprint/nuxt-openfeature"
         target="_blank"
         aria-label="GitHub repository"
       />

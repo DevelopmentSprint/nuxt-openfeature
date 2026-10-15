@@ -4,15 +4,22 @@ One-time maintainer setup for OSS release infrastructure.
 
 ## 1) npm Trusted Publisher
 
-Configure trusted publishing for `@ribrewguy/nuxt-openfeature`:
+Configure trusted publishing for `@developmentsprint/nuxt-openfeature`:
 
 1. Open npm package access settings:
-   - `https://www.npmjs.com/package/@ribrewguy/nuxt-openfeature/access`
+   - `https://www.npmjs.com/package/@developmentsprint/nuxt-openfeature/access`
 2. In **Publishing access**, add a GitHub Actions trusted publisher with:
-   - Owner: `ribrewguy`
+   - Owner: `DevelopmentSprint`
    - Repository: `nuxt-openfeature`
    - Workflow file: `changesets.yml`
    - Environment: _(leave blank)_
+   - Allow direct publishing with `npm publish` (the Changesets release job uses it)
+
+The GitHub transfer does not rename or transfer the npm scope. An npm account
+with publish access to the `developmentsprint` organization must establish the
+new package and configure its trusted publisher. Configure it for this exact
+GitHub owner and workflow, not the old personal repository. See the
+[npm trusted publishing instructions](https://docs.npmjs.com/trusted-publishers/).
 
 This matches `.github/workflows/changesets.yml`, which:
 
@@ -22,13 +29,34 @@ This matches `.github/workflows/changesets.yml`, which:
 - Invokes `changesets/action@v1` which calls `pnpm release` (alias for `changeset publish`) when no changesets remain after a release-PR merge
 - `provenance: true` in `package.json#publishConfig` flows automatically into `npm publish --provenance`
 
+### Scope migration release
+
+The migration prepares `@developmentsprint/nuxt-openfeature@0.2.5` and its
+changelog directly. Do not add another version bump for the same migration.
+Later releases use the normal Changesets workflow.
+
+After publishing, verify the new package's name, version, repository and
+integrity, and install it in a clean consumer before deprecating the old scope:
+
+```bash
+pnpm view @developmentsprint/nuxt-openfeature@0.2.5 name version repository dist.integrity
+pnpm deprecate '@ribrewguy/nuxt-openfeature@*' 'Moved to @developmentsprint/nuxt-openfeature. Update your dependency, Nuxt modules list, and imports. See https://developmentsprint.github.io/nuxt-openfeature/getting-started/installation'
+```
+
+Deprecation requires an authenticated maintainer of the old npm package.
+Keep its published versions available for existing lockfiles; do not unpublish
+them. Verify the deprecation notice on npm after the command succeeds.
+
+Changesets creates the scoped Git tag and GitHub release. Confirm the release
+exists and that the GitHub Pages deployment shows the same package version.
+
 ## 2) Branch Protection
 
 Authenticate GitHub CLI, then apply protection for `main`:
 
 ```bash
 gh auth login
-scripts/oss/setup-branch-protection.sh ribrewguy/nuxt-openfeature
+scripts/oss/setup-branch-protection.sh DevelopmentSprint/nuxt-openfeature
 ```
 
 If the repo is newly created and has no remote branches yet, push `main` first:
@@ -47,3 +75,21 @@ The script enforces:
 - no force pushes or deletions
 - linear history
 - conversation resolution before merge
+
+## 3) Codecov Organization Setup
+
+Enable `DevelopmentSprint/nuxt-openfeature` in the DevelopmentSprint Codecov
+organization and ensure the Codecov GitHub App can access the repository.
+In the organization's **Global Upload Token** settings, allow tokenless uploads
+for public repositories so fork and Dependabot PRs can report coverage.
+
+CI uses GitHub OIDC for pushes to `main` and tokenless uploads for public PRs.
+It uploads only `coverage/lcov.info`. The old `CODECOV_TOKEN` secret is unused:
+it routed uploads to `ribrewguy/nuxt-openfeature` after the GitHub transfer.
+Remove that stale secret after the new upload path has been verified.
+
+After a successful main build, check that the upload resolves to
+`DevelopmentSprint/nuxt-openfeature` and the [main coverage badge](https://codecov.io/gh/DevelopmentSprint/nuxt-openfeature/branch/main/graph/badge.svg)
+shows a percentage. A green CI job alone is insufficient because coverage
+upload failures do not block CI. See [Codecov OIDC setup](https://github.com/codecov/codecov-action#using-oidc)
+and [public tokenless uploads](https://docs.codecov.com/docs/codecov-tokens).

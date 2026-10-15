@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.5
+
+### Patch Changes
+
+- Continue publication as `@developmentsprint/nuxt-openfeature` under DevelopmentSprint. Replace the old package name in dependencies, Nuxt module registration, and package imports. The configuration key and runtime APIs remain unchanged.
+- Update repository, documentation, and coverage links for the organization transfer.
+- Show the package version and MIT license in the documentation, and explain request-scoped context evaluation and checksum limits.
+
+Versions 0.2.4 and earlier below were published as `@ribrewguy/nuxt-openfeature`.
+
 ## 0.2.4
 
 ### Patch Changes

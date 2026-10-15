@@ -1,6 +1,6 @@
 # Docs App
 
-Nuxt documentation site for `@ribrewguy/nuxt-openfeature`. Hosted on GitHub Pages.
+Nuxt documentation site for `@developmentsprint/nuxt-openfeature`. Hosted on GitHub Pages.
 
 ## Project structure
 

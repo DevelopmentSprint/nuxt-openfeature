@@ -9,6 +9,9 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
@@ -32,8 +35,11 @@ jobs:
         uses: codecov/codecov-action@v6
         with:
           files: coverage/lcov.info
+          disable_search: true
           fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
+          # Bind main uploads to the current GitHub repository, not a pre-transfer token.
+          # Public PR uploads use Codecov's tokenless mode (including forks/Dependabot).
+          use_oidc: ${{ github.event_name == 'push' }}
       - name: Build
         run: pnpm build
       - name: Docs Lint

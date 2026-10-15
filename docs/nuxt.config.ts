@@ -19,7 +19,7 @@ export default defineNuxtConfig({
       meta: [
         {
           name: 'description',
-          content: 'Documentation for @ribrewguy/nuxt-openfeature'
+          content: 'Documentation for @developmentsprint/nuxt-openfeature'
         }
       ]
     }
