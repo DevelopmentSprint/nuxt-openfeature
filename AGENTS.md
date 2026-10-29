@@ -1,5 +1,28 @@
 # Agent Instructions
 
+## Private tracker state — never publish
+
+Beads, BeadRoad, and Dolt state is local-only. This rule overrides tracker
+export, synchronization, backup, and commit instructions elsewhere in this file
+or in skills. Never publish database files, metadata, interaction logs, credentials,
+JSONL/SQL exports, or backups through Git, CI artifacts, releases, or docs sites,
+including renamed or nested copies. Public issues may contain deliberately
+reviewed summaries, never private tracker exports.
+
+Keep `.beads/`, `.beadroad/`, `.dolt/`, `dolt/`, `doltdb/`, `embeddeddolt/`,
+`proxieddb/`, `.beads-credential-key`, and `.beads.gate.lock` ignored. Do not use
+forced staging or a Git-backed tracker sync branch. Run `bd --sandbox` and keep
+`dolt.local-only=true`, `dolt.auto-push=false`, `backup.git-push=false`, and
+`export.git-add=false`. Preserve local databases; do not delete them to pass checks.
+
+Run `bash scripts/check-private-tracker.sh` before committing. Commit hooks and CI
+check the index; the push hook checks outgoing history against a freshly fetched
+named destination. Renamed exports need manual review because path checks cannot
+recognize their contents. Preserve local tracker files outside the checkout before
+switching to old history that tracked them. Do not merge or push pre-cleanup
+history back into the public repository.
+
+
 🚨 **PROCESS COMPLIANCE IS REQUIRED.**
 If a task is completed without following the Mandatory Execution Protocol, the task is considered **incorrect** and MUST be redone.
 
