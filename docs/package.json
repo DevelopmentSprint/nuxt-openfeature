@@ -18,7 +18,7 @@
     "@nuxt/ui": "^4.0.1",
     "better-sqlite3": "^12.4.1",
     "nuxt": "^4.4.6",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
