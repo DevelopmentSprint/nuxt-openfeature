@@ -7,11 +7,14 @@ import path from 'node:path'
 const verifier = path.resolve('scripts/release/verify.mjs')
 const original = JSON.parse(readFileSync('package.json', 'utf8'))
 const directories: string[] = []
+// Git hooks export repository selectors; fixtures must not inherit them.
+const fixtureEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_')))
+
 function fixture() {
   const cwd = mkdtempSync(path.join(tmpdir(), 'release-guard-'))
   directories.push(cwd)
   writeFileSync(path.join(cwd, 'package.json'), JSON.stringify(original))
-  const git = (...args: string[]) => execFileSync('git', args, { cwd, stdio: 'pipe' })
+  const git = (...args: string[]) => execFileSync('git', args, { cwd, env: fixtureEnv, stdio: 'pipe' })
   git('init', '--initial-branch=main')
   git('config', 'user.name', 'Release Test')
   git('config', 'user.email', 'test@example.invalid')
@@ -20,7 +23,7 @@ function fixture() {
   git('tag', `v${original.version}`)
   git('update-ref', 'refs/remotes/origin/main', 'HEAD')
   const verify = (mode = 'source', tag = `v${original.version}`) => execFileSync(process.execPath, [verifier, mode], {
-    cwd, env: { ...process.env, RELEASE_TAG: tag }, stdio: 'pipe',
+    cwd, env: { ...fixtureEnv, RELEASE_TAG: tag }, stdio: 'pipe',
   })
   return { cwd, git, verify }
 }
