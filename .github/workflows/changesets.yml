@@ -25,7 +25,7 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
       - name: Create version PR
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
           title: "chore(release): version packages"
           commit: "chore(release): version packages"
