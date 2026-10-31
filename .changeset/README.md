@@ -16,4 +16,4 @@ pnpm version-packages
 
 ## Publish (CI)
 
-Publishing is handled by GitHub Actions on version tags.
+Publishing is handled by `npm-publish.yml` when a maintainer publishes a stable GitHub release. Changesets only prepares version PRs. See `REPOSITORY_SETUP.md` for trusted publisher configuration.

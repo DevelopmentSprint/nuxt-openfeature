@@ -11,9 +11,9 @@ Configure trusted publishing for `@developmentsprint/nuxt-openfeature`:
 2. In **Publishing access**, add a GitHub Actions trusted publisher with:
    - Owner: `DevelopmentSprint`
    - Repository: `nuxt-openfeature`
-   - Workflow file: `changesets.yml`
+   - Workflow file: `npm-publish.yml`
    - Environment: _(leave blank)_
-   - Allow direct publishing with `npm publish` (the Changesets release job uses it)
+   - Allow direct publishing with `npm publish` (the release workflow uses it)
 
 The GitHub transfer does not rename or transfer the npm scope. An npm account
 with publish access to the `developmentsprint` organization must establish the
@@ -21,13 +21,35 @@ new package and configure its trusted publisher. Configure it for this exact
 GitHub owner and workflow, not the old personal repository. See the
 [npm trusted publishing instructions](https://docs.npmjs.com/trusted-publishers/).
 
-This matches `.github/workflows/changesets.yml`, which:
+The package must already exist on npm before configuring trusted publishing.
+No npm token or other persistent credential belongs in GitHub Actions secrets
+or workflow files. The workflow uses GitHub-hosted runners and Node 24 with
+an npm version supporting trusted publishing (11.5.1 or newer).
 
-- Runs on `push` to `main`
-- Sets `permissions.id-token: write` for OIDC trusted publishing
-- Configures `actions/setup-node` with `registry-url: https://registry.npmjs.org/`
-- Invokes `changesets/action@v1` which calls `pnpm release` (alias for `changeset publish`) when no changesets remain after a release-PR merge
-- `provenance: true` in `package.json#publishConfig` flows automatically into `npm publish --provenance`
+### Publishing subsequent releases
+
+1. Use a changeset to prepare a version PR and merge it into `main`.
+2. In GitHub Releases, create and publish a stable release with a new `vX.Y.Z`
+   tag targeting the merged commit. Its version must match `package.json`.
+   Scoped tags `@developmentsprint/nuxt-openfeature@X.Y.Z` are also supported.
+3. Watch the **Publish npm release** workflow and verify the npm version and
+   provenance after it succeeds. Drafts and prereleases are skipped.
+
+Create the release using a maintainer's GitHub session or authenticated CLI.
+Releases created by another workflow's `GITHUB_TOKEN` do not trigger this
+workflow. Changesets only opens version PRs; it does not publish packages or
+create GitHub releases.
+
+The preparation job checks that the tag matches the checked-out commit and
+belongs to `main`, runs lint, type checks and tests, builds, and scans the
+package archive for secrets and unexpected paths. Only the checked tarball is
+uploaded, with one-day retention. The separate publish job verifies its digest
+and uses OIDC; it does not check out source, install dependencies, or run package
+lifecycle scripts. Private tracker files are excluded from Git and the package.
+
+If validation fails, fix it through a new commit/version and release. If an
+unpublished version fails only because npm trust was not configured, configure
+trust and rerun the failed job. Never try to overwrite an existing npm version.
 
 ### Scope migration release
 
@@ -47,8 +69,8 @@ Deprecation requires an authenticated maintainer of the old npm package.
 Keep its published versions available for existing lockfiles; do not unpublish
 them. Verify the deprecation notice on npm after the command succeeds.
 
-Changesets creates the scoped Git tag and GitHub release. Confirm the release
-exists and that the GitHub Pages deployment shows the same package version.
+Confirm the maintainer-created GitHub release exists and that the GitHub Pages
+deployment shows the same package version.
 
 ## 2) Branch Protection
 
