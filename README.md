@@ -47,11 +47,16 @@ Replace `@ribrewguy/nuxt-openfeature` with `@developmentsprint/nuxt-openfeature`
 
 ## Release
 
-- Create a release changeset: `pnpm changeset`
-- Merge to `main` so `changesets.yml` opens/updates the release PR
-- Merge the release PR — `changesets.yml` automatically tags `@developmentsprint/nuxt-openfeature@X.Y.Z` and publishes to npm with provenance
-- Ensure npm Trusted Publisher is configured for this repository pointing at `.github/workflows/changesets.yml`
-- One-time maintainer setup details: `REPOSITORY_SETUP.md`
+1. Create a release changeset: `pnpm changeset`.
+2. Merge to `main` so `changesets.yml` opens or updates the version PR.
+3. Merge the version PR, then publish a GitHub release targeting that commit on
+   `main`, with tag `vX.Y.Z` matching `package.json`.
+4. `npm-publish.yml` validates, builds, checks the package contents, and publishes
+   to npm with provenance through OIDC. Drafts and prereleases do not publish.
+
+Configure the npm trusted publisher for `npm-publish.yml` first; see
+[repository setup](REPOSITORY_SETUP.md). Ordinary merges only prepare versions.
+An already published npm version cannot be republished.
 
 ## Commands
 
