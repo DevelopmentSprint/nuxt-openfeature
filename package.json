@@ -1,6 +1,18 @@
 {
   "name": "@developmentsprint/nuxt-openfeature",
   "version": "0.2.6",
+  "description": "Server-side OpenFeature feature flags for Nuxt 4: Flagsmith, PostHog, Vercel Flags, env and in-memory providers with request-isolated targeting.",
+  "keywords": [
+    "nuxt",
+    "nuxt-module",
+    "nuxt4",
+    "openfeature",
+    "feature-flags",
+    "feature-toggles",
+    "flagsmith",
+    "posthog",
+    "vercel-flags"
+  ],
   "private": false,
   "type": "module",
   "license": "MIT",
