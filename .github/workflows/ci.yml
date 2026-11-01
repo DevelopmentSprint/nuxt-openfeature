@@ -9,15 +9,15 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    # No OIDC here: lint, tests, build and docs run third-party code.
     permissions:
       contents: read
-      id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - name: Reject private tracker state
         run: bash scripts/check-private-tracker.sh
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: 22
           cache: pnpm
@@ -33,15 +33,13 @@ jobs:
         run: pnpm typecheck
       - name: Test (with coverage)
         run: pnpm test:coverage
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
+      - name: Keep coverage report for upload
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          files: coverage/lcov.info
-          disable_search: true
-          fail_ci_if_error: false
-          # Bind main uploads to the current GitHub repository, not a pre-transfer token.
-          # Public PR uploads use Codecov's tokenless mode (including forks/Dependabot).
-          use_oidc: ${{ github.event_name == 'push' }}
+          name: coverage-lcov
+          path: coverage/lcov.info
+          if-no-files-found: error
+          retention-days: 1
       - name: Build
         run: pnpm build
       - name: Docs Lint
@@ -50,3 +48,28 @@ jobs:
         run: pnpm docs:typecheck
       - name: Docs Build
         run: pnpm docs:build
+
+  # Only this job may request an OIDC token, and it runs no project code.
+  coverage:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: coverage-lcov
+          path: coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
+        with:
+          files: coverage/lcov.info
+          disable_search: true
+          fail_ci_if_error: false
+          # Bind main uploads to the current GitHub repository, not a pre-transfer token.
+          # Public PR uploads use Codecov's tokenless mode (including forks/Dependabot).
+          use_oidc: ${{ github.event_name == 'push' }}

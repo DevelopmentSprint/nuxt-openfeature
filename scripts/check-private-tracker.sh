@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reject private tracker paths in the index or unpublished outgoing commit trees.
+# Reject private tracker and secret paths in the index or unpublished outgoing commit trees.
 set -euo pipefail
 # Replacements are local views; pushes send the original objects. Inspect originals only.
 export GIT_NO_REPLACE_OBJECTS=1
@@ -10,7 +10,12 @@ trap 'rm -f "$paths_file" "$commits_file"' EXIT
 
 private_path() {
   case "/$1/" in
-    */.beads/*|*/.beadroad/*|*/.dolt/*|*/dolt/*|*/doltdb/*|*/embeddeddolt/*|*/proxieddb/*|*/.beads-credential-key/*|*/.beads.gate.lock/*) return 0 ;;
+    */.beads/*|*/.beadroad/*|*/.cass/*|*/.dolt/*|*/dolt/*|*/doltdb/*|*/embeddeddolt/*|*/proxieddb/*|*/.beads-credential-key/*|*/.beads.gate.lock/*) return 0 ;;
+  esac
+  # Secrets and credentials, so 'git add -f' cannot bypass .gitignore. Examples stay allowed.
+  case "/$1" in
+    */.env.example|*/.env.*.example) return 1 ;;
+    */.env|*/.env.*|*.pem|*.key|*/.npmrc) return 0 ;;
     *) return 1 ;;
   esac
 }

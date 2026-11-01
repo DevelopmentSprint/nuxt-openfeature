@@ -6,10 +6,14 @@ Security fixes are applied to the latest released version.
 
 ## Reporting a Vulnerability
 
-- Open a GitHub issue: https://github.com/DevelopmentSprint/nuxt-openfeature/issues/new
+Report vulnerabilities privately. Do not open a public issue, pull request, or
+discussion for a suspected vulnerability.
+
+- Use GitHub private vulnerability reporting:
+  https://github.com/DevelopmentSprint/nuxt-openfeature/security/advisories/new
 - Include reproduction steps, impact, and suggested remediation if available.
 
-All security and non-security issues are tracked through GitHub Issues.
+Use GitHub Issues only for non-security bugs and feature requests.
 
 ## Response Expectations
 
