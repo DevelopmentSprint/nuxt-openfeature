@@ -1,28 +1,16 @@
 {
-  "name": "docs",
+  "name": "nuxt-openfeature-docs",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.26.1",
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "typecheck": "nuxt typecheck"
+    "preview": "nuxt preview"
   },
+  "packageManager": "pnpm@10.26.1",
   "devDependencies": {
-    "@iconify-json/heroicons": "^1.2.2",
-    "@iconify-json/lucide": "^1.2.147",
-    "@iconify-json/simple-icons": "^1.2.100",
-    "@nuxt/content": "^3.16.2",
-    "@nuxt/ui": "^4.12.0",
-    "better-sqlite3": "^13.0.3",
-    "nuxt": "^4.6.3",
-    "tailwindcss": "^4.3.3"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3"
-    ]
+    "docus": "^5.15.0",
+    "nuxt": "^4.6.3"
   }
 }

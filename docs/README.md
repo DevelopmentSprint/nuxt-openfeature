@@ -1,32 +1,15 @@
-# Docs App
+# nuxt-openfeature documentation
 
-Nuxt documentation site for `@developmentsprint/nuxt-openfeature`. Hosted on GitHub Pages.
-
-## Project structure
-
-`docs/` is a standalone pnpm project with its own `pnpm-lock.yaml`. It is NOT part of the root pnpm workspace, so install its dependencies explicitly.
-
-## Commands
-
-From the repository root:
+The documentation site, built with [Docus](https://docus.dev) and published to
+GitHub Pages by `.github/workflows/docs.yml`. It is a separate pnpm project with
+its own lockfile; nothing here ships in the npm package.
 
 ```bash
-pnpm docs:dev          # Run the dev server
-pnpm docs:typecheck    # Type check
-pnpm docs:build        # Build (Nitro server bundle)
+cd docs
+pnpm install
+pnpm dev        # http://localhost:3000
+pnpm generate   # static site in .output/public
 ```
 
-From `docs/`:
-
-```bash
-pnpm install --ignore-workspace --frozen-lockfile    # Install (use --ignore-workspace from inside docs/)
-pnpm generate                                         # Pre-render the static site (output: docs/.output/public)
-```
-
-## Deployment
-
-Pushes to `main` are deployed automatically by `.github/workflows/docs-pages.yml` to GitHub Pages. Pull requests run a build-only check.
-
-Repository setting required (one-time): **Settings → Pages → Source = GitHub Actions**.
-
-No third-party platform secrets are required.
+Pages live in `content/`. The numeric prefixes order the sidebar and do not
+appear in URLs.

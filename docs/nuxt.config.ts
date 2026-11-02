@@ -1,42 +1,31 @@
-import modulePackage from '../package.json'
-
-const isProduction = process.env.NODE_ENV === 'production'
-
+// The site is generated statically and served by GitHub Pages under
+// https://developmentsprint.github.io/nuxt-openfeature/. The deploy workflow sets
+// NUXT_APP_BASE_URL=/nuxt-openfeature/ and NUXT_SITE_URL to that address; local
+// dev serves from /.
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxt/content'],
-  css: ['~/assets/css/main.css'],
-  colorMode: {
-    preference: 'light',
-    fallback: 'light'
+  extends: ['docus'],
+  site: {
+    name: 'nuxt-openfeature',
   },
+  // nuxt-agent-discovery accepts only an origin, not a URL with a path.
+  agentDiscovery: {
+    siteUrl: 'https://developmentsprint.github.io',
+  },
+  // Needs a server; GitHub Pages is static.
+  mcp: false,
   nitro: {
-    preset: 'github_pages'
+    preset: 'github_pages',
+    prerender: {
+      // GitHub Pages serves a folder's index.html for /path, but not
+      // path.html when a path/ folder exists beside it. Docus turns this off.
+      autoSubfolderIndex: true,
+      // Docus tolerates pages that fail to prerender; a broken page or link
+      // fails the build here instead.
+      failOnError: true,
+    },
   },
-  app: {
-    baseURL: isProduction ? '/nuxt-openfeature/' : '/',
-    head: {
-      title: 'Nuxt OpenFeature Docs',
-      meta: [
-        {
-          name: 'description',
-          content: 'Documentation for @developmentsprint/nuxt-openfeature'
-        }
-      ]
-    }
+  robots: {
+    // Crawlers only read robots.txt at the domain root, which this site is not.
+    robotsTxt: false,
   },
-  runtimeConfig: {
-    public: {
-      docsVersion: modulePackage.version
-    }
-  },
-  content: {
-    build: {
-      markdown: {
-        highlight: {
-          langs: ['bash', 'ts', 'json', 'yml', 'vue']
-        }
-      }
-    }
-  },
-  compatibilityDate: '2025-01-01'
 })
