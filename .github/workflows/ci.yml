@@ -9,7 +9,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    # No OIDC here: lint, tests, build and docs run third-party code.
+    # No OIDC here: lint, tests and build run third-party code.
     permissions:
       contents: read
     steps:
@@ -24,9 +24,6 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Install (docs)
-        run: pnpm install --ignore-workspace --frozen-lockfile
-        working-directory: docs
       - name: Lint
         run: pnpm lint
       - name: Typecheck
@@ -42,12 +39,6 @@ jobs:
           retention-days: 1
       - name: Build
         run: pnpm build
-      - name: Docs Lint
-        run: pnpm docs:lint
-      - name: Docs Typecheck
-        run: pnpm docs:typecheck
-      - name: Docs Build
-        run: pnpm docs:build
 
   # Only this job may request an OIDC token, and it runs no project code.
   coverage:

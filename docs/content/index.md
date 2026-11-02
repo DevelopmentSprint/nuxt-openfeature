@@ -1,32 +1,109 @@
 ---
-title: Nuxt OpenFeature Docs
+seo:
+  title: OpenFeature feature flags for Nuxt
+  description: Server-side OpenFeature feature flags for Nuxt 4, with Flagsmith, PostHog, Vercel Flags, env and in-memory providers and request-isolated targeting.
 ---
 
-# Nuxt OpenFeature Module
+::u-page-hero
+#title
+Feature flags for Nuxt, evaluated on the server
 
-`@developmentsprint/nuxt-openfeature` provides a Nuxt-first integration for OpenFeature with server-side evaluation, typed composables, and safe context propagation.
+#description
+Configure Flagsmith, PostHog, Vercel Flags, environment variables or static flags in `nuxt.config.ts`, and read them with one composable, one component or one server helper.
 
-## Safe Context Propagation
+#links
+  :::u-button
+  ---
+  size: xl
+  to: /getting-started/installation
+  trailing-icon: i-lucide-arrow-right
+  ---
+  Get started
+  :::
 
-A Nuxt server can handle requests from many users at once. The module reads targeting context from each request and passes it directly to that request’s flag evaluations, without storing user context on the shared OpenFeature client or global API. This avoids the shared-state bug where one user’s targeting attributes affect another user’s flags. During server-side rendering, supply context from the current server request; the browser context plugin runs only on the client. See [Context and Targeting](/getting-started/context-and-targeting) for validation, limits, and trusted server context.
+  :::u-button
+  ---
+  color: neutral
+  icon: i-simple-icons-github
+  size: xl
+  to: https://github.com/DevelopmentSprint/nuxt-openfeature
+  variant: outline
+  ---
+  View on GitHub
+  :::
+::
 
-## Start Here
+::u-page-section
+#features
+  :::u-page-feature
+  ---
+  icon: i-lucide-server
+  to: /guide/server-evaluation
+  ---
+  #title
+  Server-side evaluation
 
-- [Installation](/getting-started/installation)
-- [Configuration](/getting-started/configuration)
-- [Context and Targeting](/getting-started/context-and-targeting)
-- [Runtime Behavior](/getting-started/runtime-behavior)
-- [API Endpoints](/api/endpoints)
-- [Composables API](/api/composables)
-- [FeatureFlag Component](/api/component)
-- [Flagsmith Provider](/providers/flagsmith)
-- [Troubleshooting](/troubleshooting)
+  #description
+  Flags resolve in Nitro. The browser receives evaluated values, never provider SDKs or credentials.
+  :::
 
-## Project Links
+  :::u-page-feature
+  ---
+  icon: i-lucide-plug
+  to: /guide/providers
+  ---
+  #title
+  Five providers, one API
 
-- Source: [github.com/DevelopmentSprint/nuxt-openfeature](https://github.com/DevelopmentSprint/nuxt-openfeature)
-- Issues: [github.com/DevelopmentSprint/nuxt-openfeature/issues](https://github.com/DevelopmentSprint/nuxt-openfeature/issues)
+  #description
+  Flagsmith, PostHog, Vercel Flags, environment variables and in-memory flags. The first provider that knows a flag answers.
+  :::
 
-- Package: [@developmentsprint/nuxt-openfeature](https://www.npmjs.com/package/@developmentsprint/nuxt-openfeature)
-- Releases: [GitHub releases](https://github.com/DevelopmentSprint/nuxt-openfeature/releases)
-- License: [MIT](https://github.com/DevelopmentSprint/nuxt-openfeature/blob/main/LICENSE)
+  :::u-page-feature
+  ---
+  icon: i-lucide-users
+  to: /guide/context-and-targeting
+  ---
+  #title
+  Request-isolated targeting
+
+  #description
+  Context travels with each request, so one user's traits never affect another user's flags on a busy server.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-shield-check
+  to: /guide/runtime-behavior
+  ---
+  #title
+  Fail-safe defaults
+
+  #description
+  Provider errors and slow providers return the default you configured instead of failing the page.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-eye
+  to: /guide/using-flags
+  ---
+  #title
+  Composables and a component
+
+  #description
+  `useFeatureFlag`, `useFeatureFlags` and `<FeatureFlag>`, with no flash of the wrong variant.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-layers
+  to: /guide/nuxt-layers
+  ---
+  #title
+  Nuxt layers aware
+
+  #description
+  Split flag configuration across layers. The app's providers take precedence and parent layers act as fallbacks.
+  :::
+::

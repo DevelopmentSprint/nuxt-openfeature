@@ -156,3 +156,33 @@ To rotate the key, generate a new private key on the App page, update the
 secret, confirm the next version PR runs its checks, then delete the old key
 on the App page. If the App or its credentials are unavailable, the workflow
 fails at **Mint version PR token** and no version PR is opened.
+
+## 5) Documentation site (GitHub Pages)
+
+The site in `docs/` is built with [Docus](https://docus.dev) and deployed by
+`.github/workflows/docs.yml` to
+<https://developmentsprint.github.io/nuxt-openfeature/>. Pull requests that
+touch `docs/` build it; pushes to `main` deploy it, so the site describes the
+released version. Run the workflow by hand on `main` to redeploy.
+
+One-time setup, as a repository admin (already applied to this repository):
+
+```bash
+# Publish Pages from GitHub Actions rather than a branch.
+gh api -X POST repos/DevelopmentSprint/nuxt-openfeature/pages -f build_type=workflow
+# Let the github-pages environment deploy from main.
+gh api -X PUT repos/DevelopmentSprint/nuxt-openfeature/environments/github-pages \
+  -F 'deployment_branch_policy[protected_branches]=false' \
+  -F 'deployment_branch_policy[custom_branch_policies]=true'
+gh api -X POST repos/DevelopmentSprint/nuxt-openfeature/environments/github-pages/deployment-branch-policies \
+  -f name=main -f type=branch
+```
+
+The site is served under `/nuxt-openfeature/`, which Docus only partly
+supports: the workflow passes the base path and site URL, `docs/nuxt.config.ts`
+gives `nuxt-agent-discovery` the bare origin it requires and turns off the MCP
+server and `robots.txt`, and the favicon path names the base path. A custom
+domain would remove those workarounds. The theme's dependencies are
+`devDependencies` of `docs/`, a separate pnpm project with its own
+`pnpm-workspace.yaml` and lockfile; none of them runs in the published static
+site.
