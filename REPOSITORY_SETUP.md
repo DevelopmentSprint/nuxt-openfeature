@@ -115,3 +115,44 @@ After a successful main build, check that the upload resolves to
 shows a percentage. A green CI job alone is insufficient because coverage
 upload failures do not block CI. See [Codecov OIDC setup](https://github.com/codecov/codecov-action#using-oidc)
 and [public tokenless uploads](https://docs.codecov.com/docs/codecov-tokens).
+
+## 4) Changesets Version PR App
+
+Version PRs must trigger the required `validate` and `dependency-review`
+checks. Pull requests opened or updated with a workflow's `GITHUB_TOKEN` do
+not trigger other workflows, so the changesets workflow writes the version PR
+with a short-lived token from the `developmentsprint-changesets` GitHub App.
+The workflow's own `GITHUB_TOKEN` stays read-only.
+
+App registration (organization **Settings** → **Developer settings** →
+**GitHub Apps**):
+
+- Webhook inactive; no events, callback or OAuth.
+- Repository permissions: **Contents** and **Pull requests** read and write.
+  Everything else is **No access**.
+- Installable only on the DevelopmentSprint account, and installed on
+  **Only select repositories** that release with Changesets.
+
+Credentials (organization **Settings** → **Secrets and variables** →
+**Actions**), each with **Repository access** set to **Selected repositories**
+matching the installation:
+
+- Variable `CHANGESETS_APP_CLIENT_ID`: the App's Client ID.
+- Secret `CHANGESETS_APP_PRIVATE_KEY`: the full contents of a private key
+  generated on the App page. Delete the downloaded `.pem` after saving it.
+
+The workflow narrows each token to the current repository with contents and
+pull-request write access, and the token is revoked when the job ends. It is
+minted after dependency installation, so install-time lifecycle scripts never
+see it. It is not isolated from later steps: changesets/action writes it to
+`~/.netrc` before running the `version-packages` script, which can read it.
+Keep that script as plain `changeset version`, with no installs, hooks or
+third-party tools. The version commit is created through the
+GitHub API, so it is signed and attributed to the App. Changesets still does
+not publish or create GitHub releases; publishing remains the maintainer
+release flow in section 1.
+
+To rotate the key, generate a new private key on the App page, update the
+secret, confirm the next version PR runs its checks, then delete the old key
+on the App page. If the App or its credentials are unavailable, the workflow
+fails at **Mint version PR token** and no version PR is opened.
