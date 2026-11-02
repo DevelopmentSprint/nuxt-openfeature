@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.7
+
+### Patch Changes
+
+- 8f67ff4: The README is now a short overview and quick start that links to the new documentation site at https://developmentsprint.github.io/nuxt-openfeature/.
+
 ## 0.2.6
 
 ### Patch Changes

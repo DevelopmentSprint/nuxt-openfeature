@@ -1,6 +1,6 @@
 {
   "name": "@developmentsprint/nuxt-openfeature",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Server-side OpenFeature feature flags for Nuxt 4: Flagsmith, PostHog, Vercel Flags, env and in-memory providers with request-isolated targeting.",
   "keywords": [
     "nuxt",
