@@ -142,8 +142,12 @@ matching the installation:
   generated on the App page. Delete the downloaded `.pem` after saving it.
 
 The workflow narrows each token to the current repository with contents and
-pull-request write access. The token is minted after dependency installation
-and is revoked when the job ends. The version commit is created through the
+pull-request write access, and the token is revoked when the job ends. It is
+minted after dependency installation, so install-time lifecycle scripts never
+see it. It is not isolated from later steps: changesets/action writes it to
+`~/.netrc` before running the `version-packages` script, which can read it.
+Keep that script as plain `changeset version`, with no installs, hooks or
+third-party tools. The version commit is created through the
 GitHub API, so it is signed and attributed to the App. Changesets still does
 not publish or create GitHub releases; publishing remains the maintainer
 release flow in section 1.

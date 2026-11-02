@@ -26,8 +26,11 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - name: Install
         run: pnpm install --frozen-lockfile
-      # Minted after install so dependency lifecycle scripts never see it. Scoped
-      # to this repository and two permissions; revoked when the job ends.
+      # Minted after install so install-time lifecycle scripts never see it.
+      # Scoped to this repository and two permissions; revoked when the job ends.
+      # changesets/action writes it to ~/.netrc before running `version`, so
+      # that command can read it: keep `version-packages` to plain
+      # `changeset version`, with no installs, hooks or third-party tools.
       - name: Mint version PR token
         id: app-token
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
