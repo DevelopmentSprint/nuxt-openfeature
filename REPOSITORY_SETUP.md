@@ -102,10 +102,10 @@ The script enforces:
 
 Enable `DevelopmentSprint/nuxt-openfeature` in the DevelopmentSprint Codecov
 organization and ensure the Codecov GitHub App can access the repository.
-In the organization's **Global Upload Token** settings, allow tokenless uploads
-for public repositories so fork and Dependabot PRs can report coverage.
 
-CI uses GitHub OIDC for pushes to `main` and tokenless uploads for public PRs.
+CI uploads coverage to Codecov only for pushes to `main`, using GitHub OIDC,
+to keep the README badge current. Pull requests are not uploaded; the coverage
+thresholds in `vitest.config.ts` fail the required `validate` check instead.
 It uploads only `coverage/lcov.info`. The old `CODECOV_TOKEN` secret is unused:
 it routed uploads to `ribrewguy/nuxt-openfeature` after the GitHub transfer.
 Remove that stale secret after the new upload path has been verified.
@@ -113,8 +113,7 @@ Remove that stale secret after the new upload path has been verified.
 After a successful main build, check that the upload resolves to
 `DevelopmentSprint/nuxt-openfeature` and the [main coverage badge](https://codecov.io/gh/DevelopmentSprint/nuxt-openfeature/branch/main/graph/badge.svg)
 shows a percentage. A green CI job alone is insufficient because coverage
-upload failures do not block CI. See [Codecov OIDC setup](https://github.com/codecov/codecov-action#using-oidc)
-and [public tokenless uploads](https://docs.codecov.com/docs/codecov-tokens).
+upload failures do not block CI. See [Codecov OIDC setup](https://github.com/codecov/codecov-action#using-oidc).
 
 ## 4) Changesets Version PR App
 
