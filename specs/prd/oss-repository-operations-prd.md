@@ -27,14 +27,15 @@ and publicly visible quality signal.
    secrets, and SHALL build on every PR as a quality gate.
 2. Docs site SHALL maintain an independent dependency lockfile so
    `/docs` Dependabot PRs do not require cross-project reconciliation.
-3. Test runs SHALL produce lcov-format coverage; the repository README
-   SHALL show a publicly visible coverage badge; PRs SHOULD receive
-   automated coverage delta feedback.
+3. Test runs SHALL produce lcov-format coverage and SHALL fail when
+   coverage falls below the configured thresholds, so a coverage drop
+   blocks the merge; the repository README SHALL show a publicly visible
+   coverage badge for `main`.
 
 ## Non-Goals
 
 - Replacing the published module's distribution model (it is a library).
-- Coverage merge-gating or threshold enforcement (visibility before gating).
+- Per-PR coverage reports or delta comments from an external service.
 - Hosting marketing or landing pages outside the docs site.
 
 ## Architecture Implications
@@ -43,10 +44,10 @@ and publicly visible quality signal.
   (OIDC-authenticated, no external platform secrets).
 - `docs/` is a standalone pnpm project, not a workspace package; CI
   installs it explicitly.
-- Coverage uses the Vitest v8 provider with Codecov as the uploader.
-  Codecov authenticates main-branch uploads with GitHub OIDC, binding them
-  to the current repository owner. Public PR uploads use tokenless mode,
-  enabled in the DevelopmentSprint Codecov organization settings.
+- Coverage uses the Vitest v8 provider. Thresholds live in the Vitest
+  config and are enforced by the required validation check. Codecov
+  receives only `main`'s coverage, for the badge, authenticated with
+  GitHub OIDC so uploads are bound to the current repository owner.
 
 ## Acceptance Intent
 
@@ -54,8 +55,8 @@ and publicly visible quality signal.
   with no manual deploy steps.
 - A Dependabot PR for any `/docs` dependency passes CI without human
   lockfile intervention.
-- The README displays a current coverage badge; PRs surface coverage
-  delta in a comment.
+- The README displays a current coverage badge for `main`; a PR that
+  lowers coverage below the thresholds fails its required check.
 
 ## Security & Privacy Considerations
 

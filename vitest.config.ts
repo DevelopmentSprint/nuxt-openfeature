@@ -22,7 +22,15 @@ export default defineConfig({
         'src/**/*.spec.ts',
         'src/**/types.ts',
         'src/**/shims.d.ts'
-      ]
+      ],
+      // A drop below these fails `pnpm test:coverage`, and so the required
+      // validate check.
+      thresholds: {
+        lines: 95,
+        statements: 95,
+        functions: 95,
+        branches: 90
+      }
     }
   }
 })
